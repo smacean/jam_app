@@ -55,7 +55,7 @@ function Calendar() {
 export default function TestPage() {
   return (
     <div className="grid grid-rows-[50px_1fr_50px] items-top justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-gray-100">
-      <div className="text-2xl font-bold">ペニ兄</div>
+      <div className="text-2xl font-bold">ペニ兄カレンダー</div>
       <Calendar />
     </div>
   );
