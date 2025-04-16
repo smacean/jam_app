@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid'; // プラグインのインポート
+import timeGridPlugin from "@fullcalendar/timegrid";
 import allLocales from '@fullcalendar/core/locales-all.js';
 
 const thisMonth = () => {
@@ -20,8 +21,20 @@ export default function Calendar() {
     <div className="w-[600px] mx-auto">
       <FullCalendar
         //plugins={[dayGridPlugin]}
-        plugins={[dayGridPlugin, interactionPlugin]}
+        plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
         initialView="dayGridMonth"
+        
+        height="auto"
+        headerToolbar={{
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,timeGridDay",
+        }}
+        views={{
+          dayGridMonth: { buttonText: '月' },
+          timeGridWeek: { buttonText: '週' },
+          timeGridDay: { buttonText: '日' },
+        }}
 
         // 日本語の指定
         locales={allLocales}
