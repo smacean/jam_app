@@ -1,17 +1,19 @@
 'use client';
-import { useState } from 'react';
-import FullCalendar, {
-  DateSelectArg,
-  EventClickArg,
-  EventInput
-} from '@fullcalendar/react';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import FullCalendar, { EventClickArg, EventInput } from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import allLocales from '@fullcalendar/core/locales-all';
+// import { supabase } from '../../lib/supabase';
+// import Auth from '../app/login/page';
 
-export default function Calendar() {
+export default function HomePage() {
+  const router = useRouter();
+  const [session, setSession] = useState<any>(null);
   const [events, setEvents] = useState<EventInput[]>([]);
   const [form, setForm] = useState({
     title: '',
@@ -19,6 +21,23 @@ export default function Calendar() {
     startTime: '',
     endTime: '',
   });
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+    };
+
+    getSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -68,58 +87,78 @@ export default function Calendar() {
         height="auto"
         locales={allLocales}
         locale="ja"
-        // ツールバー
         headerToolbar={{
           left: "prev,next",
           center: "title",
           right: "dayGridMonth,timeGridWeek,timeGridDay",
         }}
-
-        editable={true}
-        selectable={true}
-        selectMirror={true}
-        dayMaxEvents={true}
+        editable
+        selectable
+        selectMirror
+        dayMaxEvents
         events={events}
         eventClick={handleEventClick}
       />
-      <br />
-      <h2 className="text-xl font-bold mb-2">イベント追加フォーム</h2>
-      <div className="flex flex-col gap-2 mb-4">
-        <input
-          name="title"
-          value={form.title}
-          onChange={handleInputChange}
-          placeholder="イベント名"
-          className="border p-2 rounded"
-        />
-        <input
-          name="date"
-          value={form.date}
-          onChange={handleInputChange}
-          type="date"
-          className="border p-2 rounded"
-        />
-        <input
-          name="startTime"
-          value={form.startTime}
-          onChange={handleInputChange}
-          type="time"
-          className="border p-2 rounded"
-        />
-        <input
-          name="endTime"
-          value={form.endTime}
-          onChange={handleInputChange}
-          type="time"
-          className="border p-2 rounded"
-        />
-        <button
-          onClick={handleAddEvent}
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-        >
-          イベント追加
-        </button>
-      </div>
+
+      {/* ログインしていたらフォーム表示 */}
+      {session ? (
+        <>
+          <div className="text-right mt-4 mb-2">
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut();
+                router.refresh();
+              }}
+              className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+            >
+              ログアウト
+            </button>
+          </div>
+
+          <h2 className="text-xl font-bold mb-2">イベント追加フォーム</h2>
+          <div className="flex flex-col gap-2 mb-4">
+            <input
+              name="title"
+              value={form.title}
+              onChange={handleInputChange}
+              placeholder="イベント名"
+              className="border p-2 rounded"
+            />
+            <input
+              name="date"
+              value={form.date}
+              onChange={handleInputChange}
+              type="date"
+              className="border p-2 rounded"
+            />
+            <input
+              name="startTime"
+              value={form.startTime}
+              onChange={handleInputChange}
+              type="time"
+              className="border p-2 rounded"
+            />
+            <input
+              name="endTime"
+              value={form.endTime}
+              onChange={handleInputChange}
+              type="time"
+              className="border p-2 rounded"
+            />
+            <button
+              onClick={handleAddEvent}
+              className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            >
+              イベント追加
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="mt-6">
+          <p className="text-center mb-4 text-gray-600">イベントを追加するにはログインしてください</p>
+          <Auth />
+        </div>
+      )}
     </div>
   );
 }
