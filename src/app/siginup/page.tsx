@@ -4,12 +4,12 @@ import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../../lib/supabase'; // 必要に応じて適宜変更
 
-export default function Login() {
+export default function Signup() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async (e: FormEvent) => {
+  const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
 
     const { user, error } = await supabase.auth.signUp({
@@ -20,15 +20,15 @@ export default function Login() {
     if (error) {
       console.error(error.message);
     } else {
-      console.log('User Logged in', user)
-      router.push('/admin'); // login後のリダイレクト先
+      console.log('User signed up', user)
+      router.push('/login'); // signup後のリダイレクト先
     }
   };
 
   return (
     <div className="max-w-sm mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">ログイン</h2>
-      <form onSubmit={handleLogin} className="flex flex-col gap-4">
+      <h2 className="text-xl font-bold mb-4">サインアップ</h2>
+      <form onSubmit={handleSignup} className="flex flex-col gap-4">
         <input
           type="email"
           placeholder="メールアドレス"
@@ -47,7 +47,7 @@ export default function Login() {
           type="submit"
           className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
         >
-          Login
+          Sign up
         </button>
       </form>
     </div>
