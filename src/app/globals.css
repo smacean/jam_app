@@ -31,3 +31,19 @@ body {
   margin: 0 auto; /* 水平中央寄せ */
 }
 
+/* カレンダーのボタンを黄色にカスタマイズ */
+.fc-button {
+  background-color: #f59e0b !important; /* 濃い黄色 */
+  border-color: #ac7008 !important;
+  color: white !important; /* ボタンの文字色を白に */
+}
+
+.fc-button:hover {
+  background-color: #d97706 !important; /* ホバー時は少し暗く */
+  border-color: #d97706 !important;
+}
+
+.fc-button:focus {
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.5) !important; /* フォーカス時の黄色の枠 */
+}
+
