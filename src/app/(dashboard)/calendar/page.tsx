@@ -33,7 +33,7 @@ export default function HomePage() {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-      }
+      },
     );
 
     return () => {
@@ -79,7 +79,7 @@ export default function HomePage() {
           return !(
             event.title === clickInfo.event.title && eventStart === clickStart
           );
-        })
+        }),
       );
     }
   };
