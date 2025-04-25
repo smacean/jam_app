@@ -1,4 +1,4 @@
-// ホームページをつくる、作らないうちはcalendarにリダイレクト
+// calendarに統合する
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,8 +9,9 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import allLocales from "@fullcalendar/core/locales-all";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import { Header } from "@/src/components/layouts/header/header";
 
 export default function HomePage() {
   const router = useRouter();
@@ -87,12 +88,8 @@ export default function HomePage() {
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <div className="text-right mb-4">
-        <Link href="/login">
-          <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-300 transform transition-all duration-300 ease-in-out hover:scale-105 text-sm">
-            ログインページへ
-          </button>
-        </Link>
+      <div>
+        <Header />
       </div>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
@@ -105,58 +102,50 @@ export default function HomePage() {
           center: "title",
           right: "dayGridMonth,timeGridWeek,timeGridDay",
         }}
-        editable={!!session}
-        selectable={!!session}
-        selectMirror={!!session}
-        dayMaxEvents={!!session}
+        editable
+        selectable
+        selectMirror
+        dayMaxEvents
         events={events}
         eventClick={session ? handleEventClick : undefined}
       />
-
-      {/* ログインしていたらフォーム表示 */}
-      {session ? (
-        <>
-          <h2 className="text-xl font-bold mb-2">イベント追加フォーム</h2>
-          <div className="flex flex-col gap-2 mb-4">
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleInputChange}
-              placeholder="イベント名"
-              className="border p-2 rounded"
-            />
-            <input
-              name="date"
-              value={form.date}
-              onChange={handleInputChange}
-              type="date"
-              className="border p-2 rounded"
-            />
-            <input
-              name="startTime"
-              value={form.startTime}
-              onChange={handleInputChange}
-              type="time"
-              className="border p-2 rounded"
-            />
-            <input
-              name="endTime"
-              value={form.endTime}
-              onChange={handleInputChange}
-              type="time"
-              className="border p-2 rounded"
-            />
-            <button
-              onClick={handleAddEvent}
-              className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-            >
-              イベント追加
-            </button>
-          </div>
-        </>
-      ) : (
-        <p></p>
-      )}
+      <h2 className="text-xl font-bold mb-2">イベント追加フォーム</h2>
+      <div className="flex flex-col gap-2 mb-4">
+        <input
+          name="title"
+          value={form.title}
+          onChange={handleInputChange}
+          placeholder="イベント名"
+          className="border p-2 rounded"
+        />
+        <input
+          name="date"
+          value={form.date}
+          onChange={handleInputChange}
+          type="date"
+          className="border p-2 rounded"
+        />
+        <input
+          name="startTime"
+          value={form.startTime}
+          onChange={handleInputChange}
+          type="time"
+          className="border p-2 rounded"
+        />
+        <input
+          name="endTime"
+          value={form.endTime}
+          onChange={handleInputChange}
+          type="time"
+          className="border p-2 rounded"
+        />
+        <button
+          onClick={handleAddEvent}
+          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+        >
+          イベント追加
+        </button>
+      </div>
     </div>
   );
 }
