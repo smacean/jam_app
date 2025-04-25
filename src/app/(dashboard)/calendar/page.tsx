@@ -1,26 +1,25 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import FullCalendar, { EventClickArg, EventInput } from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import listPlugin from '@fullcalendar/list';
-import allLocales from '@fullcalendar/core/locales-all';
-import { supabase } from '../../../lib/supabase';
-import Link from 'next/link';
-import Header from '../components/header';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import FullCalendar, { EventClickArg, EventInput } from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import allLocales from "@fullcalendar/core/locales-all";
+// import { supabase } from '@/lib/supabase';
+// import Auth from '../app/login/page';
 
 export default function HomePage() {
   const router = useRouter();
   const [session, setSession] = useState<any>(null);
   const [events, setEvents] = useState<EventInput[]>([]);
   const [form, setForm] = useState({
-    title: '',
-    date: '',
-    startTime: '',
-    endTime: '',
+    title: "",
+    date: "",
+    startTime: "",
+    endTime: "",
   });
 
   useEffect(() => {
@@ -31,9 +30,11 @@ export default function HomePage() {
 
     getSession();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      },
+    );
 
     return () => {
       listener?.subscription.unsubscribe();
@@ -48,7 +49,7 @@ export default function HomePage() {
   const handleAddEvent = () => {
     const { title, date, startTime, endTime } = form;
     if (!title || !date || !startTime || !endTime) {
-      alert('すべての項目を入力してください');
+      alert("すべての項目を入力してください");
       return;
     }
 
@@ -60,7 +61,7 @@ export default function HomePage() {
     };
 
     setEvents((prev) => [...prev, newEvent]);
-    setForm({ title: '', date: '', startTime: '', endTime: '' });
+    setForm({ title: "", date: "", startTime: "", endTime: "" });
   };
 
   const handleEventClick = (clickInfo: EventClickArg) => {
@@ -69,22 +70,22 @@ export default function HomePage() {
 
       setEvents((prevEvents) =>
         prevEvents.filter((event) => {
-          const eventStart = typeof event.start === 'string'
-            ? event.start
-            : event.start?.toISOString();
+          const eventStart =
+            typeof event.start === "string"
+              ? event.start
+              : event.start?.toISOString();
           const clickStart = clickInfo.event.start?.toISOString();
 
-          return !(event.title === clickInfo.event.title && eventStart === clickStart);
-        })
+          return !(
+            event.title === clickInfo.event.title && eventStart === clickStart
+          );
+        }),
       );
     }
   };
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <div> 
-        <Header />
-      </div>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
         initialView="timeGridWeek"
@@ -101,9 +102,25 @@ export default function HomePage() {
         selectMirror
         dayMaxEvents
         events={events}
-        eventClick={session ? handleEventClick : undefined}
+        eventClick={handleEventClick}
       />
-      <h2 className="text-xl font-bold mb-2">イベント追加フォーム</h2>
+
+      {/* ログインしていたらフォーム表示 */}
+      {session ? (
+        <>
+          <div className="text-right mt-4 mb-2">
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut();
+                router.refresh();
+              }}
+              className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+            >
+              ログアウト
+            </button>
+          </div>
+
+          <h2 className="text-xl font-bold mb-2">イベント追加フォーム</h2>
           <div className="flex flex-col gap-2 mb-4">
             <input
               name="title"
@@ -140,6 +157,15 @@ export default function HomePage() {
               イベント追加
             </button>
           </div>
+        </>
+      ) : (
+        <div className="mt-6">
+          <p className="text-center mb-4 text-gray-600">
+            イベントを追加するにはログインしてください
+          </p>
+          <Auth />
         </div>
-        );
+      )}
+    </div>
+  );
 }

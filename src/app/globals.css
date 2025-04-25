@@ -46,4 +46,3 @@ body {
 .fc-button:focus {
   box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.5) !important; /* フォーカス時の黄色の枠 */
 }
-
