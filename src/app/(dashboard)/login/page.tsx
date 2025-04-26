@@ -31,7 +31,7 @@ export default function CustomAuth() {
     if (error) {
       setError(error.message);
     } else {
-      router.push("/"); // ログイン後のリダイレクト先
+      router.push("/calendar"); // ログイン後のリダイレクト先
     }
   };
 
