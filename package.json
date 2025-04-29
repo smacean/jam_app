@@ -18,10 +18,14 @@
     "@fullcalendar/list": "^6.1.17",
     "@fullcalendar/react": "^6.1.17",
     "@fullcalendar/timegrid": "^6.1.17",
+    "@prisma/client": "^6.6.0",
     "@supabase/supabase-js": "^2.49.4",
+    "@trpc/react-query": "^11.1.2",
+    "@trpc/server": "^11.1.2",
     "next": "15.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

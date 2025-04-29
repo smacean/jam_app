@@ -10,16 +10,24 @@ import listPlugin from "@fullcalendar/list";
 import allLocales from "@fullcalendar/core/locales-all";
 import { supabase } from "../../../../lib/supabase";
 import Link from "next/link";
-// import { title } from "process";
+import { title } from "process";
+
+import {
+  useCreateSchedule,
+  useGetAllSchedules,
+} from "@src/server/trpc/router/schedule/implement";
 
 export default function HomePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [events, setEvents] = useState<any[]>([]);
-  
-  //フォーム
+  const [events, setEvents] = useState<EventInput[]>([]);
+
+  const { mutate: createSchedule, status: createStatus } = useCreateSchedule();
+
+  const isCreating = createStatus === "pending";
+
   const [form, setForm] = useState({
     title: "",
     date: "",
@@ -41,70 +49,79 @@ export default function HomePage() {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-      },
+      }
     );
 
     return () => {
       listener?.subscription.unsubscribe();
     };
   }, []);
-  
-  const fetchEvents = async () => {
-    const { data, error } = await supabase.from("events").select("*");
-
-    if (error) {
-      console.error("イベントの取得に失敗しました:", error.message);
-      return;
-    }
-
-    const formatted = data.map((event) => ({
-      id: event.id,
-      title: event.title,
-      start: event.start_at,
-      end: event.end_at,
-    }));
-
-    setEvents(formatted);
-  };
-
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  const handleAddEvent = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const { title, date, startTime, endTime, location } = form;
-
-    const start_at = new Date(`${date}T${startTime}`);
-    const end_at = new Date(`${date}T${endTime}`);
-
-    const { error } = await supabase.from("Schedule").insert([
-      {
-        name: title,              // title → name に変更
-        startAt: start_at,        // start_at → startAt に変更
-        endAt: end_at,            // end_at → endAt に変更
-        gatherPlace: location,                 // 同じ
-      },
-    ]);
-    
-
-    if (error) {
-      alert("登録に失敗しました: " + error.message);
-    } else {
-      alert("イベントを登録しました！");
-      setForm({ title: "", date: "", startTime: "", endTime: "", location: "" });
-      setIsModalOpen(false);
-      fetchEvents();
-    }
-  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
 
-  const handleInputChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddEvent = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { title, date, startTime, endTime } = form;
+    if (!title || !date || !startTime || !endTime) {
+      alert("すべての項目を入力してください");
+      return;
+    }
+
+    const newEvent: EventInput = {
+      title,
+      start: `${date}T${startTime}`,
+      end: `${date}T${endTime}`,
+      allDay: false,
+    };
+
+    createSchedule(
+      {
+        name: form.title,
+        startAt: new Date(),
+        endAt: new Date(Date.now() + 3600 * 1000),
+        gatherAt: undefined,
+        gatherPlace: undefined,
+      },
+      {
+        onSuccess: () => {
+          alert("スケジュール作成に成功しました！");
+        },
+        onError: () => {
+          alert("作成に失敗しました");
+        },
+      }
+    );
+
+    setEvents((prev) => [...prev, newEvent]);
+    setForm({ title: "", date: "", startTime: "", endTime: "" });
+    setIsModalOpen(false);
+  };
+
+  const handleEventClick = (clickInfo: EventClickArg) => {
+    if (confirm(`「${clickInfo.event.title}」を削除しますか？`)) {
+      clickInfo.event.remove();
+
+      setEvents((prevEvents) =>
+        prevEvents.filter((event) => {
+          const eventStart =
+            typeof event.start === "string"
+              ? event.start
+              : event.start?.toISOString();
+          const clickStart = clickInfo.event.start?.toISOString();
+
+          return !(
+            event.title === clickInfo.event.title && eventStart === clickStart
+          );
+        })
+      );
+    }
   };
 
   return (
@@ -156,19 +173,16 @@ export default function HomePage() {
           center: "title",
           right: "next",
         }}
-
         dayCellContent={(arg) => {
           return {
-            html: `${arg.dayNumberText.split('日')[0]}`
+            html: `${arg.dayNumberText.split("日")[0]}`,
           };
         }}
-
         eventContent={(arg) => {
           return {
-            html: `<div class="custom-event-content" style="font-size: 10px">${arg.event.title}</div>`
+            html: `<div class="custom-event-content" style="font-size: 10px">${arg.event.title}</div>`,
           };
         }}
-
         editable={!!session}
         selectable={!!session}
         selectMirror={!!session}
