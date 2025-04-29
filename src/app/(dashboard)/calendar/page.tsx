@@ -12,12 +12,22 @@ import { supabase } from "../../../../lib/supabase";
 import Link from "next/link";
 import { title } from "process";
 
+import {
+  useCreateSchedule,
+  useGetAllSchedules,
+} from "@src/server/trpc/router/schedule/implement";
+
 export default function HomePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [events, setEvents] = useState<EventInput[]>([]);
+
+  const { mutate: createSchedule, status: createStatus } = useCreateSchedule();
+
+  const isCreating = createStatus === "pending";
+
   const [form, setForm] = useState({
     title: "",
     date: "",
@@ -37,7 +47,7 @@ export default function HomePage() {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
-      },
+      }
     );
 
     return () => {
@@ -69,6 +79,25 @@ export default function HomePage() {
       allDay: false,
     };
 
+    createSchedule(
+      {
+        name: form.title,
+        startAt: new Date("2025-05-01T10:00:00"),
+        endAt: new Date("2025-05-01T12:00:00"),
+        // gatherAt: undefined,
+        // gatherPlace: undefined,
+        // eventId: undefined,
+      },
+      {
+        onSuccess: () => {
+          alert("スケジュール作成に成功しました！");
+        },
+        onError: () => {
+          alert("作成に失敗しました");
+        },
+      }
+    );
+
     setEvents((prev) => [...prev, newEvent]);
     setForm({ title: "", date: "", startTime: "", endTime: "" });
     setIsModalOpen(false);
@@ -89,7 +118,7 @@ export default function HomePage() {
           return !(
             event.title === clickInfo.event.title && eventStart === clickStart
           );
-        }),
+        })
       );
     }
   };
@@ -143,19 +172,16 @@ export default function HomePage() {
           center: "title",
           right: "next",
         }}
-
         dayCellContent={(arg) => {
           return {
-            html: `${arg.dayNumberText.split('日')[0]}`
+            html: `${arg.dayNumberText.split("日")[0]}`,
           };
         }}
-
         eventContent={(arg) => {
           return {
-            html: `<div class="custom-event-content" style="font-size: 10px">${arg.event.title}</div>`
+            html: `<div class="custom-event-content" style="font-size: 10px">${arg.event.title}</div>`,
           };
         }}
-
         editable={!!session}
         selectable={!!session}
         selectMirror={!!session}
