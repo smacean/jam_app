@@ -10,6 +10,7 @@ import listPlugin from "@fullcalendar/list";
 import allLocales from "@fullcalendar/core/locales-all";
 import { supabase } from "../../../../lib/supabase";
 import Link from "next/link";
+import { title } from "process";
 
 export default function HomePage() {
   const router = useRouter();
@@ -133,15 +134,28 @@ export default function HomePage() {
       {/* カレンダー本体 */}
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
-        initialView="timeGridWeek"
+        initialView="dayGridMonth"
         height="auto"
         locales={allLocales}
         locale="ja"
         headerToolbar={{
-          left: "prev,next",
+          left: "prev",
           center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
+          right: "next",
         }}
+
+        dayCellContent={(arg) => {
+          return {
+            html: `${arg.dayNumberText.split('日')[0]}`
+          };
+        }}
+
+        eventContent={(arg) => {
+          return {
+            html: `<div class="custom-event-content" style="font-size: 10px">${arg.event.title}</div>`
+          };
+        }}
+
         editable={!!session}
         selectable={!!session}
         selectMirror={!!session}
