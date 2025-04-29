@@ -27,6 +27,8 @@ model Schedule {
   tags ScheduleTag[]
   link Link[]
   image Image[]
+  participants      User[]
+  userId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -52,10 +54,14 @@ model Reminder {
   updatedAt DateTime @updatedAt
 }
 
+model Schedule_ScheduleTag {
+  
+}
+
 model ScheduleTag {
   id        String   @id @default(cuid())
   name      String
-  schedule  Schedule @relation(fields: [scheduleId], references: [id])
+  schedule  Schedule[]
   scheduleId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,6 +81,17 @@ model Image {
   url       String
   schedule  Schedule @relation(fields: [scheduleId], references: [id])
   scheduleId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  schedules Schedule[]
+  scheduleId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
