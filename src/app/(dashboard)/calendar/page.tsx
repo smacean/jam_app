@@ -82,10 +82,11 @@ export default function HomePage() {
     createSchedule(
       {
         name: form.title,
-        startAt: new Date(),
-        endAt: new Date(Date.now() + 3600 * 1000),
-        gatherAt: undefined,
-        gatherPlace: undefined,
+        startAt: new Date("2025-05-01T10:00:00"),
+        endAt: new Date("2025-05-01T12:00:00"),
+        // gatherAt: undefined,
+        // gatherPlace: undefined,
+        // eventId: undefined,
       },
       {
         onSuccess: () => {

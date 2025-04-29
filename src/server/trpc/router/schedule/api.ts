@@ -15,14 +15,20 @@ export const scheduleRouter = router({
           endAt: input.endAt,
           gatherAt: input.gatherAt,
           gatherPlace: input.gatherPlace,
-          eventId: input.eventId ?? null, // ← Prismaに渡すときundefinedは禁止なのでnullに変換！
+          eventId: input.eventId ?? null,
         },
       });
-      return schedule;
-    }),
 
+      return {
+        ...schedule,
+        startAt: new Date(schedule.startAt),
+        endAt: new Date(schedule.endAt),
+        createdAt: new Date(schedule.createdAt),
+        updatedAt: new Date(schedule.updatedAt),
+        gatherAt: schedule.gatherAt ? new Date(schedule.gatherAt) : undefined,
+      };
+    }),
   getAll: publicProcedure.query(async () => {
-    const schedules = await prisma.schedule.findMany();
-    return schedules;
+    return await prisma.schedule.findMany();
   }),
 });
