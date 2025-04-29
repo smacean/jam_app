@@ -8,12 +8,15 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import allLocales from "@fullcalendar/core/locales-all";
-// import { supabase } from '@/lib/supabase';
-// import Auth from '../app/login/page';
+import { supabase } from "../../../../lib/supabase";
+import Link from "next/link";
+import { title } from "process";
 
 export default function HomePage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [events, setEvents] = useState<EventInput[]>([]);
   const [form, setForm] = useState({
     title: "",
@@ -26,6 +29,7 @@ export default function HomePage() {
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
+      setLoading(false);
     };
 
     getSession();
@@ -41,12 +45,17 @@ export default function HomePage() {
     };
   }, []);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddEvent = () => {
+  const handleAddEvent = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const { title, date, startTime, endTime } = form;
     if (!title || !date || !startTime || !endTime) {
       alert("すべての項目を入力してください");
@@ -62,6 +71,7 @@ export default function HomePage() {
 
     setEvents((prev) => [...prev, newEvent]);
     setForm({ title: "", date: "", startTime: "", endTime: "" });
+    setIsModalOpen(false);
   };
 
   const handleEventClick = (clickInfo: EventClickArg) => {
@@ -85,85 +95,123 @@ export default function HomePage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="p-6">
+      {/* 上部ボタンエリア */}
+      <div className="flex items-center justify-between mb-6">
+        {/* 左側：ログイン・ログアウト */}
+        <div className="flex items-center gap-4">
+          {loading ? (
+            <div>Loading...</div>
+          ) : session ? (
+            <>
+              <button
+                className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-full text-sm"
+                onClick={handleLogout}
+              >
+                ログアウト
+              </button>
+            </>
+          ) : (
+            <Link href="/login">
+              <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-full text-sm">
+                ログイン
+              </button>
+            </Link>
+          )}
+        </div>
+
+        {/* 右側：モーダルを開く */}
+        {session && (
+          <button
+            className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full text-sm"
+            onClick={() => setIsModalOpen(true)}
+          >
+            イベントを追加
+          </button>
+        )}
+      </div>
+
+      {/* カレンダー本体 */}
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
-        initialView="timeGridWeek"
+        initialView="dayGridMonth"
         height="auto"
         locales={allLocales}
         locale="ja"
         headerToolbar={{
-          left: "prev,next",
+          left: "prev",
           center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
+          right: "next",
         }}
-        editable
-        selectable
-        selectMirror
+
+        dayCellContent={(arg) => {
+          return {
+            html: `${arg.dayNumberText.split('日')[0]}`
+          };
+        }}
+
+        eventContent={(arg) => {
+          return {
+            html: `<div class="custom-event-content" style="font-size: 10px">${arg.event.title}</div>`
+          };
+        }}
+
+        editable={!!session}
+        selectable={!!session}
+        selectMirror={!!session}
         dayMaxEvents
         events={events}
-        eventClick={handleEventClick}
+        eventClick={session ? handleEventClick : undefined}
       />
 
-      {/* ログインしていたらフォーム表示 */}
-      {session ? (
-        <>
-          <div className="text-right mt-4 mb-2">
+      {/* モーダル */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">イベントを追加する</h2>
+            <form onSubmit={handleAddEvent} className="flex flex-col gap-4">
+              <input
+                name="title"
+                value={form.title}
+                onChange={handleInputChange}
+                placeholder="イベント名"
+                className="border p-2 rounded"
+              />
+              <input
+                name="date"
+                value={form.date}
+                onChange={handleInputChange}
+                type="date"
+                className="border p-2 rounded"
+              />
+              <input
+                name="startTime"
+                value={form.startTime}
+                onChange={handleInputChange}
+                type="time"
+                className="border p-2 rounded"
+              />
+              <input
+                name="endTime"
+                value={form.endTime}
+                onChange={handleInputChange}
+                type="time"
+                className="border p-2 rounded"
+              />
+              <button
+                type="submit"
+                className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded"
+              >
+                追加する
+              </button>
+            </form>
             <button
-              onClick={async () => {
-                await supabase.auth.signOut();
-                router.refresh();
-              }}
-              className="bg-red-500 text-white p-2 rounded hover:bg-red-600"
+              className="mt-4 text-sm text-gray-500 hover:underline"
+              onClick={() => setIsModalOpen(false)}
             >
-              ログアウト
+              閉じる
             </button>
           </div>
-
-          <h2 className="text-xl font-bold mb-2">イベント追加フォーム</h2>
-          <div className="flex flex-col gap-2 mb-4">
-            <input
-              name="title"
-              value={form.title}
-              onChange={handleInputChange}
-              placeholder="イベント名"
-              className="border p-2 rounded"
-            />
-            <input
-              name="date"
-              value={form.date}
-              onChange={handleInputChange}
-              type="date"
-              className="border p-2 rounded"
-            />
-            <input
-              name="startTime"
-              value={form.startTime}
-              onChange={handleInputChange}
-              type="time"
-              className="border p-2 rounded"
-            />
-            <input
-              name="endTime"
-              value={form.endTime}
-              onChange={handleInputChange}
-              type="time"
-              className="border p-2 rounded"
-            />
-            <button
-              onClick={handleAddEvent}
-              className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-            >
-              イベント追加
-            </button>
-          </div>
-        </>
-      ) : (
-        <div className="mt-6">
-          <p className="text-center mb-4 text-gray-600">
-            イベントを追加するにはログインしてください
-          </p>
-          <Auth />
         </div>
       )}
     </div>
