@@ -13,3 +13,68 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Schedule {
+  id        String   @id @default(cuid())
+  name      String
+  start_at     DateTime
+  end_at       DateTime
+  gather_at  DateTime?
+  gather_place String?
+  event     Event @relation(fields: [eventId], references:[id])
+  eventId String
+  reminder Reminder[]
+  tags ScheduleTag[]
+  link Link[]
+  image Image[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  name      String
+  description String?
+  start_at     DateTime
+  end_at       DateTime
+  schedule Schedule[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reminder {
+  id        String   @id @default(cuid())
+  message   String
+  remind_at      DateTime
+  schedule  Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ScheduleTag {
+  id        String   @id @default(cuid())
+  name      String
+  schedule  Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Link {
+  id        String   @id @default(cuid())
+  url       String
+  schedule  Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  schedule  Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
