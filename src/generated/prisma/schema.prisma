@@ -21,14 +21,13 @@ model Schedule {
   endAt                DateTime
   gatherAt             DateTime?
   gatherPlace          String?
-  event                Event                  @relation(fields: [eventId], references: [id])
-  eventId              String
+  event                Event?                 @relation(fields: [eventId], references: [id])
+  eventId              String?
   reminder             Reminder[] //1対多
   schedule_scheduleTag Schedule_ScheduleTag[] //多対多
   link                 Link[] //1対多
   schedule_image       Schedule_Image[] //多対多
   schedule_user        Schedule_User[] //多対多
-  userId               String
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
 }

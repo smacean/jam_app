@@ -1,11 +1,12 @@
 // src/server/trpc/router/schedule/api.ts
-import { publicProcedure, router } from "@src/server/trpc/core"; // ★要注意（後でまとめる）
+import { router, publicProcedure } from "@src/server/trpc/core";
 import { prisma } from "@src/lib/prisma";
-import { createScheduleInputSchema } from "./def";
+import { createScheduleInputSchema, scheduleSchema } from "./def";
 
 export const scheduleRouter = router({
   create: publicProcedure
     .input(createScheduleInputSchema)
+    .output(scheduleSchema)
     .mutation(async ({ input }) => {
       const schedule = await prisma.schedule.create({
         data: {
@@ -14,11 +15,14 @@ export const scheduleRouter = router({
           endAt: input.endAt,
           gatherAt: input.gatherAt,
           gatherPlace: input.gatherPlace,
-          eventId: input.eventId,
-          userId: input.userId,
+          eventId: input.eventId ?? null, // ← Prismaに渡すときundefinedは禁止なのでnullに変換！
         },
       });
-
       return schedule;
     }),
+
+  getAll: publicProcedure.query(async () => {
+    const schedules = await prisma.schedule.findMany();
+    return schedules;
+  }),
 });

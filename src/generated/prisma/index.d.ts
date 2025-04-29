@@ -346,8 +346,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.6.0
-   * Query Engine version: f676762280b54cd07c770017ed3711ddde35f37a
+   * Prisma Client JS version: 6.7.0
+   * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
    */
   export type PrismaVersion = {
     client: string
@@ -1896,7 +1896,6 @@ export namespace Prisma {
     gatherAt: Date | null
     gatherPlace: string | null
     eventId: string | null
-    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1909,7 +1908,6 @@ export namespace Prisma {
     gatherAt: Date | null
     gatherPlace: string | null
     eventId: string | null
-    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1922,7 +1920,6 @@ export namespace Prisma {
     gatherAt: number
     gatherPlace: number
     eventId: number
-    userId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1937,7 +1934,6 @@ export namespace Prisma {
     gatherAt?: true
     gatherPlace?: true
     eventId?: true
-    userId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1950,7 +1946,6 @@ export namespace Prisma {
     gatherAt?: true
     gatherPlace?: true
     eventId?: true
-    userId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1963,7 +1958,6 @@ export namespace Prisma {
     gatherAt?: true
     gatherPlace?: true
     eventId?: true
-    userId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2048,8 +2042,7 @@ export namespace Prisma {
     endAt: Date
     gatherAt: Date | null
     gatherPlace: string | null
-    eventId: string
-    userId: string
+    eventId: string | null
     createdAt: Date
     updatedAt: Date
     _count: ScheduleCountAggregateOutputType | null
@@ -2079,10 +2072,9 @@ export namespace Prisma {
     gatherAt?: boolean
     gatherPlace?: boolean
     eventId?: boolean
-    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    event?: boolean | EventDefaultArgs<ExtArgs>
+    event?: boolean | Schedule$eventArgs<ExtArgs>
     reminder?: boolean | Schedule$reminderArgs<ExtArgs>
     schedule_scheduleTag?: boolean | Schedule$schedule_scheduleTagArgs<ExtArgs>
     link?: boolean | Schedule$linkArgs<ExtArgs>
@@ -2099,10 +2091,9 @@ export namespace Prisma {
     gatherAt?: boolean
     gatherPlace?: boolean
     eventId?: boolean
-    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    event?: boolean | EventDefaultArgs<ExtArgs>
+    event?: boolean | Schedule$eventArgs<ExtArgs>
   }, ExtArgs["result"]["schedule"]>
 
   export type ScheduleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2113,10 +2104,9 @@ export namespace Prisma {
     gatherAt?: boolean
     gatherPlace?: boolean
     eventId?: boolean
-    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    event?: boolean | EventDefaultArgs<ExtArgs>
+    event?: boolean | Schedule$eventArgs<ExtArgs>
   }, ExtArgs["result"]["schedule"]>
 
   export type ScheduleSelectScalar = {
@@ -2127,14 +2117,13 @@ export namespace Prisma {
     gatherAt?: boolean
     gatherPlace?: boolean
     eventId?: boolean
-    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "startAt" | "endAt" | "gatherAt" | "gatherPlace" | "eventId" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["schedule"]>
+  export type ScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "startAt" | "endAt" | "gatherAt" | "gatherPlace" | "eventId" | "createdAt" | "updatedAt", ExtArgs["result"]["schedule"]>
   export type ScheduleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    event?: boolean | EventDefaultArgs<ExtArgs>
+    event?: boolean | Schedule$eventArgs<ExtArgs>
     reminder?: boolean | Schedule$reminderArgs<ExtArgs>
     schedule_scheduleTag?: boolean | Schedule$schedule_scheduleTagArgs<ExtArgs>
     link?: boolean | Schedule$linkArgs<ExtArgs>
@@ -2143,16 +2132,16 @@ export namespace Prisma {
     _count?: boolean | ScheduleCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ScheduleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    event?: boolean | EventDefaultArgs<ExtArgs>
+    event?: boolean | Schedule$eventArgs<ExtArgs>
   }
   export type ScheduleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    event?: boolean | EventDefaultArgs<ExtArgs>
+    event?: boolean | Schedule$eventArgs<ExtArgs>
   }
 
   export type $SchedulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Schedule"
     objects: {
-      event: Prisma.$EventPayload<ExtArgs>
+      event: Prisma.$EventPayload<ExtArgs> | null
       reminder: Prisma.$ReminderPayload<ExtArgs>[]
       schedule_scheduleTag: Prisma.$Schedule_ScheduleTagPayload<ExtArgs>[]
       link: Prisma.$LinkPayload<ExtArgs>[]
@@ -2166,8 +2155,7 @@ export namespace Prisma {
       endAt: Date
       gatherAt: Date | null
       gatherPlace: string | null
-      eventId: string
-      userId: string
+      eventId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["schedule"]>
@@ -2564,7 +2552,7 @@ export namespace Prisma {
    */
   export interface Prisma__ScheduleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    event<T extends EventDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EventDefaultArgs<ExtArgs>>): Prisma__EventClient<$Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    event<T extends Schedule$eventArgs<ExtArgs> = {}>(args?: Subset<T, Schedule$eventArgs<ExtArgs>>): Prisma__EventClient<$Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     reminder<T extends Schedule$reminderArgs<ExtArgs> = {}>(args?: Subset<T, Schedule$reminderArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     schedule_scheduleTag<T extends Schedule$schedule_scheduleTagArgs<ExtArgs> = {}>(args?: Subset<T, Schedule$schedule_scheduleTagArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Schedule_ScheduleTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     link<T extends Schedule$linkArgs<ExtArgs> = {}>(args?: Subset<T, Schedule$linkArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2606,7 +2594,6 @@ export namespace Prisma {
     readonly gatherAt: FieldRef<"Schedule", 'DateTime'>
     readonly gatherPlace: FieldRef<"Schedule", 'String'>
     readonly eventId: FieldRef<"Schedule", 'String'>
-    readonly userId: FieldRef<"Schedule", 'String'>
     readonly createdAt: FieldRef<"Schedule", 'DateTime'>
     readonly updatedAt: FieldRef<"Schedule", 'DateTime'>
   }
@@ -3002,6 +2989,25 @@ export namespace Prisma {
      * Limit how many Schedules to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Schedule.event
+   */
+  export type Schedule$eventArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Event
+     */
+    select?: EventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Event
+     */
+    omit?: EventOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EventInclude<ExtArgs> | null
+    where?: EventWhereInput
   }
 
   /**
@@ -12668,7 +12674,6 @@ export namespace Prisma {
     gatherAt: 'gatherAt',
     gatherPlace: 'gatherPlace',
     eventId: 'eventId',
-    userId: 'userId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -12852,11 +12857,10 @@ export namespace Prisma {
     endAt?: DateTimeFilter<"Schedule"> | Date | string
     gatherAt?: DateTimeNullableFilter<"Schedule"> | Date | string | null
     gatherPlace?: StringNullableFilter<"Schedule"> | string | null
-    eventId?: StringFilter<"Schedule"> | string
-    userId?: StringFilter<"Schedule"> | string
+    eventId?: StringNullableFilter<"Schedule"> | string | null
     createdAt?: DateTimeFilter<"Schedule"> | Date | string
     updatedAt?: DateTimeFilter<"Schedule"> | Date | string
-    event?: XOR<EventScalarRelationFilter, EventWhereInput>
+    event?: XOR<EventNullableScalarRelationFilter, EventWhereInput> | null
     reminder?: ReminderListRelationFilter
     schedule_scheduleTag?: Schedule_ScheduleTagListRelationFilter
     link?: LinkListRelationFilter
@@ -12871,8 +12875,7 @@ export namespace Prisma {
     endAt?: SortOrder
     gatherAt?: SortOrderInput | SortOrder
     gatherPlace?: SortOrderInput | SortOrder
-    eventId?: SortOrder
-    userId?: SortOrder
+    eventId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     event?: EventOrderByWithRelationInput
@@ -12893,11 +12896,10 @@ export namespace Prisma {
     endAt?: DateTimeFilter<"Schedule"> | Date | string
     gatherAt?: DateTimeNullableFilter<"Schedule"> | Date | string | null
     gatherPlace?: StringNullableFilter<"Schedule"> | string | null
-    eventId?: StringFilter<"Schedule"> | string
-    userId?: StringFilter<"Schedule"> | string
+    eventId?: StringNullableFilter<"Schedule"> | string | null
     createdAt?: DateTimeFilter<"Schedule"> | Date | string
     updatedAt?: DateTimeFilter<"Schedule"> | Date | string
-    event?: XOR<EventScalarRelationFilter, EventWhereInput>
+    event?: XOR<EventNullableScalarRelationFilter, EventWhereInput> | null
     reminder?: ReminderListRelationFilter
     schedule_scheduleTag?: Schedule_ScheduleTagListRelationFilter
     link?: LinkListRelationFilter
@@ -12912,8 +12914,7 @@ export namespace Prisma {
     endAt?: SortOrder
     gatherAt?: SortOrderInput | SortOrder
     gatherPlace?: SortOrderInput | SortOrder
-    eventId?: SortOrder
-    userId?: SortOrder
+    eventId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ScheduleCountOrderByAggregateInput
@@ -12931,8 +12932,7 @@ export namespace Prisma {
     endAt?: DateTimeWithAggregatesFilter<"Schedule"> | Date | string
     gatherAt?: DateTimeNullableWithAggregatesFilter<"Schedule"> | Date | string | null
     gatherPlace?: StringNullableWithAggregatesFilter<"Schedule"> | string | null
-    eventId?: StringWithAggregatesFilter<"Schedule"> | string
-    userId?: StringWithAggregatesFilter<"Schedule"> | string
+    eventId?: StringNullableWithAggregatesFilter<"Schedule"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Schedule"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Schedule"> | Date | string
   }
@@ -13416,10 +13416,9 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    event: EventCreateNestedOneWithoutScheduleInput
+    event?: EventCreateNestedOneWithoutScheduleInput
     reminder?: ReminderCreateNestedManyWithoutScheduleInput
     schedule_scheduleTag?: Schedule_ScheduleTagCreateNestedManyWithoutScheduleInput
     link?: LinkCreateNestedManyWithoutScheduleInput
@@ -13434,8 +13433,7 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    eventId: string
-    userId: string
+    eventId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminder?: ReminderUncheckedCreateNestedManyWithoutScheduleInput
@@ -13452,10 +13450,9 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    event?: EventUpdateOneRequiredWithoutScheduleNestedInput
+    event?: EventUpdateOneWithoutScheduleNestedInput
     reminder?: ReminderUpdateManyWithoutScheduleNestedInput
     schedule_scheduleTag?: Schedule_ScheduleTagUpdateManyWithoutScheduleNestedInput
     link?: LinkUpdateManyWithoutScheduleNestedInput
@@ -13470,8 +13467,7 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    eventId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminder?: ReminderUncheckedUpdateManyWithoutScheduleNestedInput
@@ -13488,8 +13484,7 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    eventId: string
-    userId: string
+    eventId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13501,7 +13496,6 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13513,8 +13507,7 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    eventId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14037,9 +14030,9 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type EventScalarRelationFilter = {
-    is?: EventWhereInput
-    isNot?: EventWhereInput
+  export type EventNullableScalarRelationFilter = {
+    is?: EventWhereInput | null
+    isNot?: EventWhereInput | null
   }
 
   export type ReminderListRelationFilter = {
@@ -14105,7 +14098,6 @@ export namespace Prisma {
     gatherAt?: SortOrder
     gatherPlace?: SortOrder
     eventId?: SortOrder
-    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14118,7 +14110,6 @@ export namespace Prisma {
     gatherAt?: SortOrder
     gatherPlace?: SortOrder
     eventId?: SortOrder
-    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14131,7 +14122,6 @@ export namespace Prisma {
     gatherAt?: SortOrder
     gatherPlace?: SortOrder
     eventId?: SortOrder
-    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14532,10 +14522,12 @@ export namespace Prisma {
     set?: string | null
   }
 
-  export type EventUpdateOneRequiredWithoutScheduleNestedInput = {
+  export type EventUpdateOneWithoutScheduleNestedInput = {
     create?: XOR<EventCreateWithoutScheduleInput, EventUncheckedCreateWithoutScheduleInput>
     connectOrCreate?: EventCreateOrConnectWithoutScheduleInput
     upsert?: EventUpsertWithoutScheduleInput
+    disconnect?: EventWhereInput | boolean
+    delete?: EventWhereInput | boolean
     connect?: EventWhereUniqueInput
     update?: XOR<XOR<EventUpdateToOneWithWhereWithoutScheduleInput, EventUpdateWithoutScheduleInput>, EventUncheckedUpdateWithoutScheduleInput>
   }
@@ -15388,7 +15380,6 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     reminder?: ReminderCreateNestedManyWithoutScheduleInput
@@ -15405,7 +15396,6 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     reminder?: ReminderUncheckedCreateNestedManyWithoutScheduleInput
@@ -15451,8 +15441,7 @@ export namespace Prisma {
     endAt?: DateTimeFilter<"Schedule"> | Date | string
     gatherAt?: DateTimeNullableFilter<"Schedule"> | Date | string | null
     gatherPlace?: StringNullableFilter<"Schedule"> | string | null
-    eventId?: StringFilter<"Schedule"> | string
-    userId?: StringFilter<"Schedule"> | string
+    eventId?: StringNullableFilter<"Schedule"> | string | null
     createdAt?: DateTimeFilter<"Schedule"> | Date | string
     updatedAt?: DateTimeFilter<"Schedule"> | Date | string
   }
@@ -15464,10 +15453,9 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    event: EventCreateNestedOneWithoutScheduleInput
+    event?: EventCreateNestedOneWithoutScheduleInput
     schedule_scheduleTag?: Schedule_ScheduleTagCreateNestedManyWithoutScheduleInput
     link?: LinkCreateNestedManyWithoutScheduleInput
     schedule_image?: Schedule_ImageCreateNestedManyWithoutScheduleInput
@@ -15481,8 +15469,7 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    eventId: string
-    userId: string
+    eventId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     schedule_scheduleTag?: Schedule_ScheduleTagUncheckedCreateNestedManyWithoutScheduleInput
@@ -15514,10 +15501,9 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    event?: EventUpdateOneRequiredWithoutScheduleNestedInput
+    event?: EventUpdateOneWithoutScheduleNestedInput
     schedule_scheduleTag?: Schedule_ScheduleTagUpdateManyWithoutScheduleNestedInput
     link?: LinkUpdateManyWithoutScheduleNestedInput
     schedule_image?: Schedule_ImageUpdateManyWithoutScheduleNestedInput
@@ -15531,8 +15517,7 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    eventId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schedule_scheduleTag?: Schedule_ScheduleTagUncheckedUpdateManyWithoutScheduleNestedInput
@@ -15548,10 +15533,9 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    event: EventCreateNestedOneWithoutScheduleInput
+    event?: EventCreateNestedOneWithoutScheduleInput
     reminder?: ReminderCreateNestedManyWithoutScheduleInput
     link?: LinkCreateNestedManyWithoutScheduleInput
     schedule_image?: Schedule_ImageCreateNestedManyWithoutScheduleInput
@@ -15565,8 +15549,7 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    eventId: string
-    userId: string
+    eventId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminder?: ReminderUncheckedCreateNestedManyWithoutScheduleInput
@@ -15617,10 +15600,9 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    event?: EventUpdateOneRequiredWithoutScheduleNestedInput
+    event?: EventUpdateOneWithoutScheduleNestedInput
     reminder?: ReminderUpdateManyWithoutScheduleNestedInput
     link?: LinkUpdateManyWithoutScheduleNestedInput
     schedule_image?: Schedule_ImageUpdateManyWithoutScheduleNestedInput
@@ -15634,8 +15616,7 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    eventId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminder?: ReminderUncheckedUpdateManyWithoutScheduleNestedInput
@@ -15710,10 +15691,9 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    event: EventCreateNestedOneWithoutScheduleInput
+    event?: EventCreateNestedOneWithoutScheduleInput
     reminder?: ReminderCreateNestedManyWithoutScheduleInput
     schedule_scheduleTag?: Schedule_ScheduleTagCreateNestedManyWithoutScheduleInput
     schedule_image?: Schedule_ImageCreateNestedManyWithoutScheduleInput
@@ -15727,8 +15707,7 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    eventId: string
-    userId: string
+    eventId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminder?: ReminderUncheckedCreateNestedManyWithoutScheduleInput
@@ -15760,10 +15739,9 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    event?: EventUpdateOneRequiredWithoutScheduleNestedInput
+    event?: EventUpdateOneWithoutScheduleNestedInput
     reminder?: ReminderUpdateManyWithoutScheduleNestedInput
     schedule_scheduleTag?: Schedule_ScheduleTagUpdateManyWithoutScheduleNestedInput
     schedule_image?: Schedule_ImageUpdateManyWithoutScheduleNestedInput
@@ -15777,8 +15755,7 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    eventId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminder?: ReminderUncheckedUpdateManyWithoutScheduleNestedInput
@@ -15794,10 +15771,9 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    event: EventCreateNestedOneWithoutScheduleInput
+    event?: EventCreateNestedOneWithoutScheduleInput
     reminder?: ReminderCreateNestedManyWithoutScheduleInput
     schedule_scheduleTag?: Schedule_ScheduleTagCreateNestedManyWithoutScheduleInput
     link?: LinkCreateNestedManyWithoutScheduleInput
@@ -15811,8 +15787,7 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    eventId: string
-    userId: string
+    eventId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminder?: ReminderUncheckedCreateNestedManyWithoutScheduleInput
@@ -15863,10 +15838,9 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    event?: EventUpdateOneRequiredWithoutScheduleNestedInput
+    event?: EventUpdateOneWithoutScheduleNestedInput
     reminder?: ReminderUpdateManyWithoutScheduleNestedInput
     schedule_scheduleTag?: Schedule_ScheduleTagUpdateManyWithoutScheduleNestedInput
     link?: LinkUpdateManyWithoutScheduleNestedInput
@@ -15880,8 +15854,7 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    eventId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminder?: ReminderUncheckedUpdateManyWithoutScheduleNestedInput
@@ -15956,10 +15929,9 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    event: EventCreateNestedOneWithoutScheduleInput
+    event?: EventCreateNestedOneWithoutScheduleInput
     reminder?: ReminderCreateNestedManyWithoutScheduleInput
     schedule_scheduleTag?: Schedule_ScheduleTagCreateNestedManyWithoutScheduleInput
     link?: LinkCreateNestedManyWithoutScheduleInput
@@ -15973,8 +15945,7 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    eventId: string
-    userId: string
+    eventId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminder?: ReminderUncheckedCreateNestedManyWithoutScheduleInput
@@ -16029,10 +16000,9 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    event?: EventUpdateOneRequiredWithoutScheduleNestedInput
+    event?: EventUpdateOneWithoutScheduleNestedInput
     reminder?: ReminderUpdateManyWithoutScheduleNestedInput
     schedule_scheduleTag?: Schedule_ScheduleTagUpdateManyWithoutScheduleNestedInput
     link?: LinkUpdateManyWithoutScheduleNestedInput
@@ -16046,8 +16016,7 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    eventId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminder?: ReminderUncheckedUpdateManyWithoutScheduleNestedInput
@@ -16234,7 +16203,6 @@ export namespace Prisma {
     endAt: Date | string
     gatherAt?: Date | string | null
     gatherPlace?: string | null
-    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16246,7 +16214,6 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminder?: ReminderUpdateManyWithoutScheduleNestedInput
@@ -16263,7 +16230,6 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminder?: ReminderUncheckedUpdateManyWithoutScheduleNestedInput
@@ -16280,7 +16246,6 @@ export namespace Prisma {
     endAt?: DateTimeFieldUpdateOperationsInput | Date | string
     gatherAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     gatherPlace?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
