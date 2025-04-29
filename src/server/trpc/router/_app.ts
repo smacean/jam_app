@@ -1,9 +1,10 @@
 // src/server/trpc/router/_app.ts
-import { router } from "@/server/trpc/core";
+import { router } from "@src/server/trpc/core"; // ← ここをcore.tsからimportする！
 import { scheduleRouter } from "./schedule/api";
 
 export const appRouter = router({
-  schedule: scheduleRouter, // "schedule"部分も後から変更可能
+  schedule: scheduleRouter, // ここはそのまま
 });
 
+// AppRouter型（クライアント側で必要）
 export type AppRouter = typeof appRouter;

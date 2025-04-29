@@ -1,5 +1,5 @@
 // src/server/trpc/router/schedule/api.ts
-import { publicProcedure, router } from "@/server/trpc/core"; // ★要注意（後でまとめる）
+import { publicProcedure, router } from "@src/server/trpc/core"; // ★要注意（後でまとめる）
 import { prisma } from "@src/lib/prisma";
 import { createScheduleInputSchema } from "./def";
 
