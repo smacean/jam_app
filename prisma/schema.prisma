@@ -13,3 +13,106 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Schedule {
+  id        String   @id @default(cuid())
+  name      String
+  startAt     DateTime
+  endAt       DateTime
+  gatherAt  DateTime?
+  gatherPlace String?
+  event     Event @relation(fields: [eventId], references:[id])
+  eventId String
+  reminder Reminder[] //1対多
+  schedule_scheduleTag Schedule_ScheduleTag[] //多対多
+  link Link[] //1対多
+  schedule_image Schedule_Image[] //多対多
+  schedule_user Schedule_User[] //多対多
+  userId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  name      String
+  description String?
+  start_at     DateTime
+  end_at       DateTime
+  schedule Schedule[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reminder {
+  id        String   @id @default(cuid())
+  message   String
+  remind_at      DateTime
+  schedule  Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Schedule_ScheduleTag {
+  scheduleId String
+  scheduleTagId String
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleTag ScheduleTag @relation(fields: [scheduleTagId], references: [id])
+
+  @@id([scheduleId, scheduleTagId])
+}
+
+model ScheduleTag {
+  id        String   @id @default(cuid())
+  name      String
+  schedule_scheduleTag Schedule_ScheduleTag[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Link {
+  id        String   @id @default(cuid())
+  url       String
+  schedule  Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Schedule_Image {
+  scheduleId String
+  imageId String
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+  image Image @relation(fields: [imageId], references: [id])
+
+  @@id([scheduleId, imageId])
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  schedule_image Schedule_Image[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Schedule_User {
+  scheduleId String
+  userId String
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([scheduleId, userId])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  schedule_user Schedule_User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
