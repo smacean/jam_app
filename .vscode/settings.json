@@ -1,3 +1,9 @@
 {
-  "cSpell.words": ["daygrid", "fullcalendar", "supabase", "timegrid"]
+  "cSpell.words": [
+    "daygrid",
+    "fullcalendar",
+    "supabase",
+    "timegrid"
+  ],
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
