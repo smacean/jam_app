@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import FullCalendar from "@fullcalendar/react";
+import FullCalendar, { EventClickArg, EventInput } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -11,6 +11,7 @@ import allLocales from "@fullcalendar/core/locales-all";
 import { supabase } from "../../../../lib/supabase";
 import Link from "next/link";
 import { title } from "process";
+import { fetchEvents, addEvent } from "../../api/trpc/[trpc]/route";
 
 import {
   useCreateSchedule,
@@ -22,7 +23,8 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [events, setEvents] = useState<EventInput[]>([]);
+  const [event, setEvent] = useState<any>([]);
+  const [addEvent, setAddEvent] = useState("");
 
   const { mutate: createSchedule, status: createStatus } = useCreateSchedule();
 
@@ -33,9 +35,7 @@ export default function HomePage() {
     date: "",
     startTime: "",
     endTime: "",
-    location: "",
   });
-
 
   useEffect(() => {
     const getSession = async () => {
@@ -74,26 +74,28 @@ export default function HomePage() {
       return;
     }
 
-    const newEvent: EventInput = {
-      title,
-      start: `${date}T${startTime}`,
-      end: `${date}T${endTime}`,
-      allDay: false,
+    const added = await addEvent(addEvent)
+    if (added) {
+      setEvent([...event, ...added]);
+      setAddEvent("");
+      }
     };
 
     createSchedule(
       {
-        name: form.title,
-        startAt: new Date(),
-        endAt: new Date(Date.now() + 3600 * 1000),
-        gatherAt: undefined,
-        gatherPlace: undefined,
+        name: title,
+        startAt: new Date(`${date}T${startTime}`),
+        endAt: new Date(`${date}T${endTime}`),
+        // gatherAt: undefined,
+        // gatherPlace: undefined,
+        // eventId: undefined,
       },
       {
         onSuccess: () => {
           alert("スケジュール作成に成功しました！");
         },
-        onError: () => {
+        onError: (error) => {
+          console.error("接続エラー", error);
           alert("作成に失敗しました");
         },
       }
@@ -188,6 +190,7 @@ export default function HomePage() {
         selectMirror={!!session}
         dayMaxEvents
         events={events}
+        eventClick={session ? handleEventClick : undefined}
       />
 
       {/* モーダル */}
@@ -202,7 +205,6 @@ export default function HomePage() {
                 onChange={handleInputChange}
                 placeholder="イベント名"
                 className="border p-2 rounded"
-                required
               />
               <input
                 name="date"
@@ -210,7 +212,6 @@ export default function HomePage() {
                 onChange={handleInputChange}
                 type="date"
                 className="border p-2 rounded"
-                required
               />
               <input
                 name="startTime"
@@ -218,21 +219,12 @@ export default function HomePage() {
                 onChange={handleInputChange}
                 type="time"
                 className="border p-2 rounded"
-                required
               />
               <input
                 name="endTime"
                 value={form.endTime}
                 onChange={handleInputChange}
                 type="time"
-                className="border p-2 rounded"
-                required
-              />
-              <input
-                name="location"
-                value={form.location}
-                onChange={handleInputChange}
-                placeholder="場所"
                 className="border p-2 rounded"
               />
               <button
