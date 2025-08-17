@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { trpc } from "@src/utils/trpc";
 import { httpBatchLink } from "@trpc/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "./globals.css";
 
 const queryClient = new QueryClient();
 const trpcClient = trpc.createClient({
