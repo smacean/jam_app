@@ -1,4 +1,3 @@
-// src/features/events/components/EventContents.tsx
 "use client";
 
 import Image from "next/image";
@@ -24,21 +23,21 @@ export default function EventContents({ events }: Props) {
         <div
           key={event.id}
           className="border rounded-lg shadow p-2 flex flex-col items-center"
-          style={{ maxWidth: "300px", maxHeight: "300px", width: "100%" }}
+          style={{ width: "100%", maxWidth: "300px", height: "400px" }}
         >
           {/* 画像 */}
-          <div className="relative w-full h-[120px] mb-2 rounded overflow-hidden">
+          <div className="relative w-full h-[180px] mb-2 rounded overflow-hidden bg-gray-100">
             <Image
               src={event.imageUrl}
               alt={event.title}
               fill
-              style={{ objectFit: "cover" }}
               sizes="(max-width: 768px) 100vw"
+              style={{ objectFit: "contain", objectPosition: "center" }}
             />
           </div>
 
           {/* 本文エリア */}
-          <div className="flex flex-col w-full px-2">
+          <div className="flex flex-col w-full px-2 flex-1">
             {/* タイトル */}
             <h2 className="text-xl font-bold leading-snug truncate">
               {event.title}
@@ -57,7 +56,9 @@ export default function EventContents({ events }: Props) {
 
             {/* 説明文 */}
             <p className="text-sm text-gray-700 mt-1 line-clamp-3">
-              {event.description}
+              {event.description.length > 50
+                ? event.description.slice(0, 50) + "…"
+                : event.description}
             </p>
 
             {/* 詳細ボタン */}
