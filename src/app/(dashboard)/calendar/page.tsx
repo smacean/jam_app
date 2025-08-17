@@ -11,6 +11,7 @@ import allLocales from "@fullcalendar/core/locales-all";
 import { supabase } from "../../../../lib/supabase";
 import Link from "next/link";
 import { title } from "process";
+import { fetchEvents, addEvent } from "../../api/trpc/[trpc]/route";
 
 import {
   useCreateSchedule,
@@ -22,7 +23,8 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [events, setEvents] = useState<EventInput[]>([]);
+  const [event, setEvent] = useState<any>([]);
+  const [addEvent, setAddEvent] = useState("");
 
   const { mutate: createSchedule, status: createStatus } = useCreateSchedule();
 
@@ -72,18 +74,18 @@ export default function HomePage() {
       return;
     }
 
-    const newEvent: EventInput = {
-      title,
-      start: `${date}T${startTime}`,
-      end: `${date}T${endTime}`,
-      allDay: false,
+    const added = await addEvent(addEvent)
+    if (added) {
+      setEvent([...event, ...added]);
+      setAddEvent("");
+      }
     };
 
     createSchedule(
       {
-        name: form.title,
-        startAt: new Date("2025-05-01T10:00:00"),
-        endAt: new Date("2025-05-01T12:00:00"),
+        name: title,
+        startAt: new Date(`${date}T${startTime}`),
+        endAt: new Date(`${date}T${endTime}`),
         // gatherAt: undefined,
         // gatherPlace: undefined,
         // eventId: undefined,
@@ -92,7 +94,8 @@ export default function HomePage() {
         onSuccess: () => {
           alert("スケジュール作成に成功しました！");
         },
-        onError: () => {
+        onError: (error) => {
+          console.error("接続エラー", error);
           alert("作成に失敗しました");
         },
       }
