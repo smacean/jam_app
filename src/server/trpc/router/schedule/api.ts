@@ -1,6 +1,6 @@
 // src/server/trpc/router/schedule/api.ts
 import { router, publicProcedure } from "@src/server/trpc/core";
-import { prisma } from "@src/lib/prisma";
+import { prisma } from "@/src/lib/db";
 import { createScheduleInputSchema, scheduleSchema } from "./def";
 
 export const scheduleRouter = router({
