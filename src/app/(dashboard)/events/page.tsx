@@ -11,7 +11,7 @@ async function getEvents(): Promise<Event[]> {
       title: "夏メル",
       date: "8月上旬",
       location: "土浦CLUB GOLD",
-      imageUrl: "/next.svg",
+      imageUrl: "/Hiphopいくま.png",
       description: "一年生の初参加イベント高レベルショーケース盛り沢山",
     },
     {
@@ -19,7 +19,7 @@ async function getEvents(): Promise<Event[]> {
       title: "イベントB",
       date: "2025-06-15",
       location: "大阪",
-      imageUrl: "/file.svg",
+      imageUrl: "/Hiphopゆきと.png",
       description: "大阪の有名なマラソン大会です。",
     },
     {
@@ -35,7 +35,7 @@ async function getEvents(): Promise<Event[]> {
       title: "イベントD",
       date: "2025-08-05",
       location: "札幌",
-      imageUrl: "/event4.jpg",
+      imageUrl: "/Lockかずき１.png",
       description: "北海道で行われるビールフェスティバル。",
     },
     {
