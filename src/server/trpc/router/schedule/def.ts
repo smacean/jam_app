@@ -6,16 +6,16 @@ export const createScheduleInputSchema = z.object({
   name: z.string(),
   startAt: z.preprocess(
     (arg) => (typeof arg === "string" ? new Date(arg) : arg),
-    z.date()
+    z.date(),
   ),
   endAt: z.preprocess(
     (arg) => (typeof arg === "string" ? new Date(arg) : arg),
-    z.date()
+    z.date(),
   ),
   gatherAt: z
     .preprocess(
       (arg) => (typeof arg === "string" ? new Date(arg) : arg),
-      z.date()
+      z.date(),
     )
     .optional(),
   gatherPlace: z.string().optional(),

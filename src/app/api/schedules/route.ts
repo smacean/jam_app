@@ -30,7 +30,9 @@ export async function GET(req: NextRequest) {
     const result = await listSchedules(q.page, q.perPage);
 
     // 念のため出力もZodで形保証（契約違反を早期検知）
-    return NextResponse.json(ListSchedulesResponse.parse(result), { status: 200 });
+    return NextResponse.json(ListSchedulesResponse.parse(result), {
+      status: 200,
+    });
   } catch (e) {
     // --- 追加: 何で落ちたかをサーバログに出す（返却JSONはOpenAPIに合わせて最小）
     if (e instanceof ZodError) {
@@ -38,7 +40,9 @@ export async function GET(req: NextRequest) {
     } else {
       console.error("GET /api/schedules Error:", e);
     }
-    return NextResponse.json(ApiErrorSchema.parse({ error: "Invalid query" }), { status: 400 });
+    return NextResponse.json(ApiErrorSchema.parse({ error: "Invalid query" }), {
+      status: 400,
+    });
   }
 }
 
@@ -61,6 +65,8 @@ export async function POST(req: NextRequest) {
     } else {
       console.error("POST /api/schedules Error:", e);
     }
-    return NextResponse.json(ApiErrorSchema.parse({ error: "Invalid body" }), { status: 400 });
+    return NextResponse.json(ApiErrorSchema.parse({ error: "Invalid body" }), {
+      status: 400,
+    });
   }
 }

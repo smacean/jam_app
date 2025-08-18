@@ -2,7 +2,10 @@
 // 目的: Zodスキーマとエンドポイント定義からOpenAPI(JSON)を生成する。
 // ここに「APIの一覧・入出力・ステータス」を集約し、/api/openapi で配る。
 
-import { OpenAPIRegistry, OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
+import {
+  OpenAPIRegistry,
+  OpenApiGeneratorV3,
+} from "@asteasolutions/zod-to-openapi";
 import {
   ApiErrorSchema,
   CreateScheduleInput,
