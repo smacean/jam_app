@@ -19,12 +19,32 @@ export default function Navbar() {
           Realjam公式
         </div>
 
-        {/* 右側：適当なメニュー */}
+        {/* 右側：メニュー */}
         <ul className="flex gap-6 text-sm text-zinc-700">
-          <li className="hover:text-blue-600 cursor-pointer">Top</li>
-          <li className="hover:text-blue-600 cursor-pointer">カレンダー</li>
-          <li className="hover:text-blue-600 cursor-pointer">イベント一覧</li>
-          <li className="hover:text-blue-600 cursor-pointer">ログイン</li>
+          <li
+            className="hover:text-blue-600 cursor-pointer"
+            onClick={() => router.push("/")}
+          >
+            Top
+          </li>
+          <li
+            className="hover:text-blue-600 cursor-pointer"
+            onClick={() => router.push("/calendar")}
+          >
+            カレンダー
+          </li>
+          <li
+            className="hover:text-blue-600 cursor-pointer"
+            onClick={() => router.push("/events")}
+          >
+            イベント一覧
+          </li>
+          <li
+            className="hover:text-blue-600 cursor-pointer"
+            onClick={() => router.push("/login")}
+          >
+            ログイン
+          </li>
         </ul>
       </nav>
     </header>
