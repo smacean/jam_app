@@ -1,27 +1,32 @@
+// src/components/layouts/header/header.tsx
+"use client";
+
 import { useRouter } from "next/navigation";
-import { supabase } from "../../../../lib/supabase";
 import { useState } from "react";
 
-export const Header = () => {
+export default function Navbar() {
   const router = useRouter();
-
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error(error.message);
-    } else {
-      router.refresh();
-    }
-  };
+  const [user, setUser] = useState(null);
 
   return (
-    <header className="p-4 bg-gray-100 flex justify-end">
-      <button
-        onClick={handleLogout}
-        className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition duration-200"
-      >
-        Logout
-      </button>
+    <header className="sticky top-0 z-50 bg-white shadow">
+      <nav className="mx-auto max-w-[960px] flex items-center justify-between p-4">
+        {/* 左側：ロゴ */}
+        <div
+          className="text-lg font-bold text-blue-600 cursor-pointer"
+          onClick={() => router.push("/")}
+        >
+          Realjam公式
+        </div>
+
+        {/* 右側：適当なメニュー */}
+        <ul className="flex gap-6 text-sm text-zinc-700">
+          <li className="hover:text-blue-600 cursor-pointer">Top</li>
+          <li className="hover:text-blue-600 cursor-pointer">カレンダー</li>
+          <li className="hover:text-blue-600 cursor-pointer">イベント一覧</li>
+          <li className="hover:text-blue-600 cursor-pointer">ログイン</li>
+        </ul>
+      </nav>
     </header>
   );
-};
+}
