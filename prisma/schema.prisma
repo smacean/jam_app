@@ -21,8 +21,8 @@ datasource db {
 model Schedule {
   id                   String                 @id @default(cuid())
   name                 String
-  startAt              DateTime
-  endAt                DateTime
+  startAt              DateTime?
+  endAt                DateTime?
   gatherAt             DateTime?
   gatherPlace          String?
   event                Event?                 @relation(fields: [eventId], references: [id])
@@ -40,8 +40,6 @@ model Event {
   id          String     @id @default(cuid())
   name        String
   description String?
-  start_at    DateTime
-  end_at      DateTime
   schedule    Schedule[]
   event_eventTag Event_EventTag[]
   createdAt   DateTime   @default(now())
