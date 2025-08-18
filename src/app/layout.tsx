@@ -1,31 +1,27 @@
-"use client";
 
 // src/app/layout.tsx
-import { ReactNode } from "react";
-import { trpc } from "@src/utils/trpc";
-import { httpBatchLink } from "@trpc/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./globals.css";
+import Navbar from "../components/layouts/header/header";
 
-const queryClient = new QueryClient();
-const trpcClient = trpc.createClient({
-  links: [
-    httpBatchLink({
-      url: "/api/trpc",
-    }),
-  ],
-});
+export const metadata = {
+  title: "My Website",
+  description: "Demo site",
+};
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <body>
-        <trpc.Provider client={trpcClient} queryClient={queryClient}>
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </trpc.Provider>
+        <Navbar />
+        <main className="mx-auto max-w-[960px] p-6 space-y-24">
+          {children}
+        </main>
       </body>
     </html>
   );
 }
+
