@@ -74,10 +74,5 @@ export const ListSchedulesResponse = z.object({
   perPage: z.number().int(),
 });
 
-// 共通エラー形
-export const ApiErrorSchema = z.object({
-  error: z.string().openapi({ example: "Invalid body" }),
-});
-
 export type CreateScheduleInput = z.infer<typeof CreateScheduleInput>;
 export type Schedule = z.infer<typeof Schedule>;
