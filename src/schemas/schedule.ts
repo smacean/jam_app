@@ -66,12 +66,17 @@ export const ListSchedulesQuery = z.object({
   perPage: z.coerce.number().int().min(1).max(100).default(50).openapi({ example: 50 }),
 });
 
-// GET 一覧のレスポンス
+// GET 一覧、idごと取得のレスポンス
 export const ListSchedulesResponse = z.object({
   items: z.array(Schedule),
   total: z.number().int().openapi({ example: 123 }),
   page: z.number().int(),
   perPage: z.number().int(),
+});
+
+// GET Idによる取得
+export const GetScheduleParams = z.object({
+  id: Id,
 });
 
 // DELETE スケジュールの削除
@@ -87,6 +92,7 @@ export type CreateScheduleInput = z.infer<typeof CreateScheduleInput>;
 export type UpdateScheduleInput = z.infer<typeof UpdateScheduleInput>;
 export type ListSchedulesQuery = z.infer<typeof ListSchedulesQuery>;
 export type ListSchedulesResponse = z.infer<typeof ListSchedulesResponse>;
+export type GetScheduleParams = z.infer<typeof GetScheduleParams>;
 export type DeleteScheduleInput = z.infer<typeof DeleteScheduleInput>;
 export type DeleteScheduleResponse = z.infer<typeof DeleteScheduleResponse>;
 export type Schedule = z.infer<typeof Schedule>;
