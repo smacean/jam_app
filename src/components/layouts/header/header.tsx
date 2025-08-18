@@ -24,6 +24,7 @@ export default function Navbar() {
           <li className="hover:text-blue-600 cursor-pointer">Top</li>
           <li className="hover:text-blue-600 cursor-pointer">カレンダー</li>
           <li className="hover:text-blue-600 cursor-pointer">イベント一覧</li>
+          <li className="hover:text-blue-600 cursor-pointer">ログイン</li>
         </ul>
       </nav>
     </header>
