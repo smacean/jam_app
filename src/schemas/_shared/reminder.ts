@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const ReminderInput = z.object({
-  message: z.string().min(1).openapi({ example: "明日は春メルです" }),
-  remindAt: z.string().datetime().openapi({ example: "2025-08-17T08:55:00.000Z" }),
+  message: z.string().min(1),
+  remindAt: z.string().datetime(),
 });
 export type ReminderInput = z.infer<typeof ReminderInput>;
 

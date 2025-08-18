@@ -1,33 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import FullCalendar, { EventClickArg, EventInput } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import allLocales from "@fullcalendar/core/locales-all";
-import { supabase } from "../../../../lib/supabase";
-import Link from "next/link";
-import { title } from "process";
 
-import {
-  useCreateSchedule,
-  useGetAllSchedules,
-} from "@src/server/trpc/router/schedule/implement";
+interface ScheduleEvent {
+  id: string;
+  name: string;
+  start_at: string;
+  end_at: string;
+}
 
-export default function HomePage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export default function CalendarPage() {
   const [events, setEvents] = useState<EventInput[]>([]);
-
-  const { mutate: createSchedule, status: createStatus } = useCreateSchedule();
-
-  const isCreating = createStatus === "pending";
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState({
     title: "",
     date: "",
@@ -35,36 +25,35 @@ export default function HomePage() {
     endTime: "",
   });
 
-  useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-      setLoading(false);
-    };
-
-    getSession();
-
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      }
-    );
-
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  // API からスケジュール取得
+  const fetchSchedules = async () => {
+    try {
+      const res = await fetch("/api/schedules");
+      const data = await res.json();
+      const mappedEvents: EventInput[] = (data.items ?? []).map(
+        (s: ScheduleEvent) => ({
+          id: s.id,
+          title: s.name,
+          start: s.start_at,
+          end: s.end_at,
+        })
+      );
+      setEvents(mappedEvents);
+    } catch (err) {
+      console.error("fetchSchedules error:", err);
+    }
   };
+
+  useEffect(() => {
+    fetchSchedules();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddEvent = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     const { title, date, startTime, endTime } = form;
     if (!title || !date || !startTime || !endTime) {
@@ -72,125 +61,88 @@ export default function HomePage() {
       return;
     }
 
-    const newEvent: EventInput = {
-      title,
-      start: `${date}T${startTime}`,
-      end: `${date}T${endTime}`,
-      allDay: false,
+    const body = {
+      name: title,
+      startAt: `${date}T${startTime}:00.000Z`,
+      endAt: `${date}T${endTime}:00.000Z`,
     };
 
-    createSchedule(
-      {
-        name: form.title,
-        startAt: new Date("2025-05-01T10:00:00"),
-        endAt: new Date("2025-05-01T12:00:00"),
-        // gatherAt: undefined,
-        // gatherPlace: undefined,
-        // eventId: undefined,
-      },
-      {
-        onSuccess: () => {
-          alert("スケジュール作成に成功しました！");
-        },
-        onError: () => {
-          alert("作成に失敗しました");
-        },
-      }
-    );
+    try {
+      const res = await fetch("/api/schedules", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-    setEvents((prev) => [...prev, newEvent]);
-    setForm({ title: "", date: "", startTime: "", endTime: "" });
-    setIsModalOpen(false);
+      if (!res.ok) {
+        alert("スケジュール作成に失敗しました");
+        return;
+      }
+
+      const newEvent = await res.json();
+      setEvents((prev) => [
+        ...prev,
+        {
+          id: newEvent.id,
+          title: newEvent.name,
+          start: newEvent.start_at,
+          end: newEvent.end_at,
+        },
+      ]);
+      setForm({ title: "", date: "", startTime: "", endTime: "" });
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("handleAddEvent error:", err);
+    }
   };
 
-  const handleEventClick = (clickInfo: EventClickArg) => {
-    if (confirm(`「${clickInfo.event.title}」を削除しますか？`)) {
+  const handleEventClick = async (clickInfo: EventClickArg) => {
+    if (!confirm(`「${clickInfo.event.title}」を削除しますか？`)) return;
+
+    try {
+      const res = await fetch(`/api/schedules?id=${clickInfo.event.id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        alert("削除に失敗しました");
+        return;
+      }
+
       clickInfo.event.remove();
-
-      setEvents((prevEvents) =>
-        prevEvents.filter((event) => {
-          const eventStart =
-            typeof event.start === "string"
-              ? event.start
-              : event.start?.toISOString();
-          const clickStart = clickInfo.event.start?.toISOString();
-
-          return !(
-            event.title === clickInfo.event.title && eventStart === clickStart
-          );
-        })
-      );
+    } catch (err) {
+      console.error("handleEventClick error:", err);
     }
   };
 
   return (
     <div className="p-6">
-      {/* 上部ボタンエリア */}
-      <div className="flex items-center justify-between mb-6">
-        {/* 左側：ログイン・ログアウト */}
-        <div className="flex items-center gap-4">
-          {loading ? (
-            <div>Loading...</div>
-          ) : session ? (
-            <>
-              <button
-                className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-full text-sm"
-                onClick={handleLogout}
-              >
-                ログアウト
-              </button>
-            </>
-          ) : (
-            <Link href="/login">
-              <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-full text-sm">
-                ログイン
-              </button>
-            </Link>
-          )}
-        </div>
+      <button
+        className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded mb-4"
+        onClick={() => setIsModalOpen(true)}
+      >
+        イベントを追加
+      </button>
 
-        {/* 右側：モーダルを開く */}
-        {session && (
-          <button
-            className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full text-sm"
-            onClick={() => setIsModalOpen(true)}
-          >
-            イベントを追加
-          </button>
-        )}
-      </div>
-
-      {/* カレンダー本体 */}
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
         initialView="dayGridMonth"
         height="auto"
         locales={allLocales}
         locale="ja"
-        headerToolbar={{
-          left: "prev",
-          center: "title",
-          right: "next",
-        }}
-        dayCellContent={(arg) => {
-          return {
-            html: `${arg.dayNumberText.split("日")[0]}`,
-          };
-        }}
-        eventContent={(arg) => {
-          return {
-            html: `<div class="custom-event-content" style="font-size: 10px">${arg.event.title}</div>`,
-          };
-        }}
-        editable={!!session}
-        selectable={!!session}
-        selectMirror={!!session}
-        dayMaxEvents
+        headerToolbar={{ left: "prev", center: "title", right: "next" }}
+        dayCellContent={(arg) => ({
+          html: `${arg.dayNumberText.split("日")[0]}`,
+        })}
+        eventContent={(arg) => ({
+          html: `<div style="font-size:10px">${arg.event.title}</div>`,
+        })}
+        editable
+        selectable
         events={events}
-        eventClick={session ? handleEventClick : undefined}
+        eventClick={handleEventClick}
       />
 
-      {/* モーダル */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const LinkInput = z.object({
-  url: z.string().url().openapi({ example: "https://zoom.us/j/xxxx" }),
+  url: z.string().url(),
 });
 export type LinkInput = z.infer<typeof LinkInput>;
 
