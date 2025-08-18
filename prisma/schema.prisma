@@ -43,7 +43,7 @@ model Event {
   start_at    DateTime
   end_at      DateTime
   schedule    Schedule[]
-  eventTag    EventTag[] //1対多
+  event_eventTag Event_EventTag[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
@@ -77,11 +77,19 @@ model ScheduleTag {
   updatedAt            DateTime               @updatedAt
 }
 
+model Event_EventTag {
+  eventId    String
+  eventTagId String
+  event      Event    @relation(fields: [eventId], references: [id])
+  eventTag   EventTag @relation(fields: [eventTagId], references: [id])
+
+  @@id([eventId, eventTagId])
+}
+
 model EventTag {
   id         String   @id @default(cuid())
   name       String
-  event      Event    @relation(fields: [eventId], references: [id])
-  eventId    String
+  event_eventTag Event_EventTag[]
   tagGroup   TagGroup @relation(fields: [tagGroupId], references: [id])
   tagGroupId String
   createdAt  DateTime @default(now())
