@@ -25,8 +25,8 @@ export default function EventContents({ events, onTagClick }: Props) {
       {events.map((event) => (
         <Link
           key={event.id}
-          href={`/events/${event.id}/edit`}
-          className="w-full max-w-[300px] h-[420px]"
+          href={`/events/${event.id}`}
+          className="w-full max-w-[300px] h-[400px]"
         >
           <div className="border rounded-lg shadow p-2 flex flex-col items-center cursor-pointer hover:shadow-lg transition-transform duration-200 hover:scale-105">
             {/* 画像 */}
