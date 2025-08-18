@@ -54,6 +54,15 @@ export const UpdateEventTagInput = z.object({
   eventIds: IdArray.optional(),
 });
 
+// ===== 削除スキーマ =====
+export const DeleteScheduleTagInput = z.object({
+  id: Id.openapi({ example: "tag_abc" }),
+});
+
+export const DeleteEventTagInput = z.object({
+  id: Id.openapi({ example: "tag_abc" }),
+});
+
 // ===== 一覧取得クエリ =====
 export const ListTagsQuery = z.object({
   page: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
@@ -114,6 +123,11 @@ export const ListTagGroupsResponse = z.object({
   perPage: z.number().int(),
 });
 
+// ===== TagGroup 削除 =====
+export const DeleteTagGroupInput = z.object({
+  id: Id.openapi({ example: "group_abc" }),
+});
+
 // ===== 共通エラー形 =====
 export const ApiErrorSchema = z.object({
   error: z.string().openapi({ example: "Invalid body" }),
@@ -123,9 +137,14 @@ export const ApiErrorSchema = z.object({
 export type ScheduleTag = z.infer<typeof ScheduleTagSchema>;
 export type EventTag = z.infer<typeof EventTagSchema>;
 export type TagGroup = z.infer<typeof TagGroupSchema>;
+
 export type CreateScheduleTagInput = z.infer<typeof CreateScheduleTagInput>;
 export type CreateEventTagInput = z.infer<typeof CreateEventTagInput>;
 export type UpdateScheduleTagInput = z.infer<typeof UpdateScheduleTagInput>;
 export type UpdateEventTagInput = z.infer<typeof UpdateEventTagInput>;
+export type DeleteScheduleTagInput = z.infer<typeof DeleteScheduleTagInput>;
+export type DeleteEventTagInput = z.infer<typeof DeleteEventTagInput>;
+
 export type CreateTagGroupInput = z.infer<typeof CreateTagGroupInput>;
 export type UpdateTagGroupInput = z.infer<typeof UpdateTagGroupInput>;
+export type DeleteTagGroupInput = z.infer<typeof DeleteTagGroupInput>;
