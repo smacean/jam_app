@@ -10,6 +10,24 @@ import { Id, IdArray } from "./_shared/ids";
 // ZodにOpenAPI用メタデータ機能を拡張
 extendZodWithOpenApi(z);
 
+// レスポンス1件（DBのDateはISO文字列に変換して返す）
+export const Schedule = z.object({
+  id: Id,
+  name: z.string().openapi({ example: "朝会" }),
+  startAt: z.string().datetime().nullable(),
+  endAt: z.string().datetime().nullable(),
+  gatherAt: z.string().datetime().nullable(),
+  gatherPlace: z.string().nullable().openapi({ example: "Zoom" }),
+  eventId: Id.nullable().openapi({ example: "evt_123" }),
+  reminders: z.array(ReminderInput).nullable().openapi({ example: [{ message: "明日は春メルです", remindAt: "2025-08-17T08:55:00.000Z" }] }),
+  links: z.array(LinkInput).nullable().openapi({ example: [{ url: "https://example.com" }] }),
+  scheduleTagIds: IdArray.nullable().openapi({ example: ["tag_123", "tag_456"] }),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+export type Schedule = z.infer<typeof Schedule>;
+
+
 // POST /api/schedules の入力ボディ
 export const CreateScheduleInput = z.object({
   // 必須
@@ -26,6 +44,8 @@ export const CreateScheduleInput = z.object({
   links: z.array(LinkInput).optional(), // openapi()足す
   scheduleTagIds: IdArray.optional(),
 });
+export type CreateScheduleInput = z.infer<typeof CreateScheduleInput>;
+
 
 // PUT /api/schedules の入力ボディ
 export const UpdateScheduleInput = z.object({
@@ -43,28 +63,14 @@ export const UpdateScheduleInput = z.object({
   links: z.array(LinkInput).optional(), // openapi()足す
   scheduleTagIds: IdArray.optional(),
 });
-
-// レスポンス1件（DBのDateはISO文字列に変換して返す）
-export const Schedule = z.object({
-  id: Id,
-  name: z.string().openapi({ example: "朝会" }),
-  startAt: z.string().datetime().nullable(),
-  endAt: z.string().datetime().nullable(),
-  gatherAt: z.string().datetime().nullable(),
-  gatherPlace: z.string().nullable().openapi({ example: "Zoom" }),
-  eventId: Id.nullable().openapi({ example: "evt_123" }),
-  reminders: z.array(ReminderInput).nullable().openapi({ example: [{ message: "明日は春メルです", remindAt: "2025-08-17T08:55:00.000Z" }] }),
-  links: z.array(LinkInput).nullable().openapi({ example: [{ url: "https://example.com" }] }),
-  scheduleTagIds: IdArray.nullable().openapi({ example: ["tag_123", "tag_456"] }),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-});
+export type UpdateScheduleInput = z.infer<typeof UpdateScheduleInput>;
 
 // GET 一覧のクエリ（ページング）
 export const ListSchedulesQuery = z.object({
   page: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
   perPage: z.coerce.number().int().min(1).max(100).default(50).openapi({ example: 50 }),
 });
+export type ListSchedulesQuery = z.infer<typeof ListSchedulesQuery>;
 
 // GET 一覧、idごと取得のレスポンス
 export const ListSchedulesResponse = z.object({
@@ -73,26 +79,21 @@ export const ListSchedulesResponse = z.object({
   page: z.number().int(),
   perPage: z.number().int(),
 });
+export type ListSchedulesResponse = z.infer<typeof ListSchedulesResponse>;
 
 // GET Idによる取得
 export const GetScheduleParams = z.object({
   id: Id,
 });
+export type GetScheduleParams = z.infer<typeof GetScheduleParams>;
 
 // DELETE スケジュールの削除
 export const DeleteScheduleInput = z.object({
   id: Id,
 });
+export type DeleteScheduleInput = z.infer<typeof DeleteScheduleInput>;
 
 export const DeleteScheduleResponse = z.object({
   success: z.boolean().openapi({ example: true }),
 });
-
-export type CreateScheduleInput = z.infer<typeof CreateScheduleInput>;
-export type UpdateScheduleInput = z.infer<typeof UpdateScheduleInput>;
-export type ListSchedulesQuery = z.infer<typeof ListSchedulesQuery>;
-export type ListSchedulesResponse = z.infer<typeof ListSchedulesResponse>;
-export type GetScheduleParams = z.infer<typeof GetScheduleParams>;
-export type DeleteScheduleInput = z.infer<typeof DeleteScheduleInput>;
 export type DeleteScheduleResponse = z.infer<typeof DeleteScheduleResponse>;
-export type Schedule = z.infer<typeof Schedule>;
