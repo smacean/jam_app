@@ -13,8 +13,8 @@ extendZodWithOpenApi(z);
  * POST /api/events
  */
 export const CreateEventRequest = z.object({
-  name: z.string().min(1).openapi({ example: "社内LT大会" }),
-  description: z.string().optional().openapi({ example: "ライトニングトークを実施します" }),
+  name: z.string().min(1).openapi({ example: "春メル" }),
+  description: z.string().optional().openapi({ example: "春にあるイベントです" }),
   // 多対多: Event_EventTag 経由で EventTag を紐付け
   eventTagIds: IdArray.optional().openapi({ example: ["evt_tag_001", "evt_tag_002"] }),
 });
@@ -27,9 +27,9 @@ export type CreateEventRequest = z.infer<typeof CreateEventRequest>;
  */
 export const UpdateEventRequest = z.object({
   id: Id,
-  name: z.string().min(1).optional().openapi({ example: "社内LT大会（第2回）" }),
+  name: z.string().min(1).optional().openapi({ example: "夏メル" }),
   // null を許容したい運用なら .nullable().optional() に変更
-  description: z.string().optional().openapi({ example: "登壇者を追加募集します" }),
+  description: z.string().optional().openapi({ example: "夏にあるイベントです" }),
   eventTagIds: IdArray.optional().openapi({ example: ["evt_tag_003"] }),
 });
 export type UpdateEventRequest = z.infer<typeof UpdateEventRequest>;
@@ -45,13 +45,32 @@ export type GetEventParams = z.infer<typeof GetEventParams>;
 
 /**
  * Query (list)
- * GET /api/events?page=&perPage=
+ * GET /api/events
  */
-export const ListEventsQuery = z.object({
+export const AllListEventsQuery = z.object({});
+export type AllListEventsQuery = z.infer<typeof AllListEventsQuery>;
+
+/**
+ * Query (list)
+ * GET /api/events?page=&perPage=
+ * - ページング用のクエリ
+ */
+export const ListEventsPagingQuery = z.object({
   page: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
   perPage: z.coerce.number().int().min(1).max(100).default(50).openapi({ example: 50 }),
 });
-export type ListEventsQuery = z.infer<typeof ListEventsQuery>;
+export type ListEventsPagingQuery = z.infer<typeof ListEventsPagingQuery>;
+
+/**
+ * Query (list)
+ * GET /api/events?page=&perPage=
+ * - タグIDで絞り込むクエリ
+ */
+export const ListEventsByTagsQuery = z.object({
+  tagIds: z.array(Id).nonempty().openapi({ example: ["evt_tag_001","evt_tag_002"] }),
+  page: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
+  perPage: z.coerce.number().int().min(1).max(100).default(50).openapi({ example: 50 }),
+});
 
 /**
  * Response schema (single)

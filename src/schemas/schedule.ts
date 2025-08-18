@@ -47,7 +47,7 @@ export const CreateScheduleInput = z.object({
 export type CreateScheduleInput = z.infer<typeof CreateScheduleInput>;
 
 
-// PUT /api/schedules の入力ボディ
+// PUT /api/schedules/:id の入力ボディ
 export const UpdateScheduleInput = z.object({
   // 必須
   id: Id,
@@ -66,11 +66,9 @@ export const UpdateScheduleInput = z.object({
 export type UpdateScheduleInput = z.infer<typeof UpdateScheduleInput>;
 
 // GET 一覧のクエリ（ページング）
-export const ListSchedulesQuery = z.object({
-  page: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
-  perPage: z.coerce.number().int().min(1).max(100).default(50).openapi({ example: 50 }),
+export const AllListSchedulesInput = z.object({
 });
-export type ListSchedulesQuery = z.infer<typeof ListSchedulesQuery>;
+export type AllListSchedulesInput = z.infer<typeof AllListSchedulesInput>;
 
 // GET 一覧、idごと取得のレスポンス
 export const ListSchedulesResponse = z.object({
@@ -86,6 +84,21 @@ export const GetScheduleParams = z.object({
   id: Id,
 });
 export type GetScheduleParams = z.infer<typeof GetScheduleParams>;
+
+// GET 月 & タグ絞り込み（ページネーションなし）
+export const SearchSchedulesByMonthAndTagsRequest = z.object({
+  // YYYY-MM 固定
+  month: z.string()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "format must be YYYY-MM")
+    .openapi({ example: "2025-08" }),
+
+  // 未指定（undefined）でもよい、指定するなら配列
+  scheduleTagIds: z.array(Id).optional()
+    .openapi({ example: ["tag_123", "tag_456"] }),
+});
+export type SearchSchedulesByMonthAndTagsRequest =
+  z.infer<typeof SearchSchedulesByMonthAndTagsRequest>;
+
 
 // DELETE スケジュールの削除
 export const DeleteScheduleInput = z.object({
