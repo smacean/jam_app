@@ -22,7 +22,7 @@ export default function EventContents({ events }: Props) {
       {events.map((event) => (
         <Link
           key={event.id}
-          href={`/events/${event.id}/edit`}
+          href={`/events/${event.id}`}
           className="w-full max-w-[300px] h-[400px]"
         >
           <div
