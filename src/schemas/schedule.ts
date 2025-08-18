@@ -21,10 +21,10 @@ export const CreateScheduleInput = z.object({
   // optional
   gatherAt: z.string().datetime().optional().openapi({ example: "2025-08-17T08:50:00.000Z" }),
   gatherPlace: z.string().optional().openapi({ example: "Zoom" }),
-  eventId: IdArray.optional(),
+  eventId: Id.optional(),
   reminders: z.array(ReminderInput).optional(), // openapi()足す
   links: z.array(LinkInput).optional(), // openapi()足す
-  scheduleTagsIds: IdArray.optional(),
+  scheduleTagIds: IdArray.optional(),
 });
 
 // PUT /api/schedules の入力ボディ
@@ -41,7 +41,7 @@ export const UpdateScheduleInput = z.object({
   eventId: z.string().optional().openapi({ example: "evt_123" }),
   reminders: z.array(ReminderInput).optional(), // openapi()足す
   links: z.array(LinkInput).optional(), // openapi()足す
-  scheduleTagsIds: IdArray.optional(),
+  scheduleTagIds: IdArray.optional(),
 });
 
 // レスポンス1件（DBのDateはISO文字列に変換して返す）
@@ -52,10 +52,10 @@ export const Schedule = z.object({
   endAt: z.string().datetime().nullable(),
   gatherAt: z.string().datetime().nullable(),
   gatherPlace: z.string().nullable().openapi({ example: "Zoom" }),
-  eventId: z.string().nullable().openapi({ example: "evt_123" }),
+  eventId: Id.nullable().openapi({ example: "evt_123" }),
   reminders: z.array(ReminderInput).nullable().openapi({ example: [{ message: "明日は春メルです", remindAt: "2025-08-17T08:55:00.000Z" }] }),
   links: z.array(LinkInput).nullable().openapi({ example: [{ url: "https://example.com" }] }),
-  scheduleTagsIds: IdArray.nullable().openapi({ example: ["tag_123", "tag_456"] }),
+  scheduleTagIds: IdArray.nullable().openapi({ example: ["tag_123", "tag_456"] }),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
@@ -74,12 +74,19 @@ export const ListSchedulesResponse = z.object({
   perPage: z.number().int(),
 });
 
-export type CreateScheduleInput = z.infer<typeof CreateScheduleInput>;
-export type Schedule = z.infer<typeof Schedule>;
-
-
 // DELETE スケジュールの削除
 export const DeleteScheduleInput = z.object({
   id: Id,
 });
+
+export const DeleteScheduleResponse = z.object({
+  success: z.boolean().openapi({ example: true }),
+});
+
+export type CreateScheduleInput = z.infer<typeof CreateScheduleInput>;
+export type UpdateScheduleInput = z.infer<typeof UpdateScheduleInput>;
+export type ListSchedulesQuery = z.infer<typeof ListSchedulesQuery>;
+export type ListSchedulesResponse = z.infer<typeof ListSchedulesResponse>;
 export type DeleteScheduleInput = z.infer<typeof DeleteScheduleInput>;
+export type DeleteScheduleResponse = z.infer<typeof DeleteScheduleResponse>;
+export type Schedule = z.infer<typeof Schedule>;
