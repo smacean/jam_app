@@ -1,9 +1,9 @@
 // src/schemas/event.ts
 // 目的: APIの入出力契約（Contract）をZodで定義し、OpenAPIにも流用する。
 
-import { z } from "zod";
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import { Id, IdArray } from "./_shared/ids";
+import { z } from 'zod';
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+import { Id, IdArray } from './_shared/ids';
 
 // ZodにOpenAPI用メタデータ機能を拡張
 extendZodWithOpenApi(z);
@@ -13,14 +13,14 @@ extendZodWithOpenApi(z);
  * POST /api/events
  */
 export const CreateEventRequest = z.object({
-  name: z.string().min(1).openapi({ example: "春メル" }),
+  name: z.string().min(1).openapi({ example: '春メル' }),
   description: z
     .string()
     .optional()
-    .openapi({ example: "春にあるイベントです" }),
+    .openapi({ example: '春にあるイベントです' }),
   // 多対多: Event_EventTag 経由で EventTag を紐付け
   eventTagIds: IdArray.optional().openapi({
-    example: ["evt_tag_001", "evt_tag_002"],
+    example: ['evt_tag_001', 'evt_tag_002'],
   }),
 });
 export type CreateEventRequest = z.infer<typeof CreateEventRequest>;
@@ -32,13 +32,13 @@ export type CreateEventRequest = z.infer<typeof CreateEventRequest>;
  */
 export const UpdateEventRequest = z.object({
   id: Id,
-  name: z.string().min(1).optional().openapi({ example: "夏メル" }),
+  name: z.string().min(1).optional().openapi({ example: '夏メル' }),
   // null を許容したい運用なら .nullable().optional() に変更
   description: z
     .string()
     .optional()
-    .openapi({ example: "夏にあるイベントです" }),
-  eventTagIds: IdArray.optional().openapi({ example: ["evt_tag_003"] }),
+    .openapi({ example: '夏にあるイベントです' }),
+  eventTagIds: IdArray.optional().openapi({ example: ['evt_tag_003'] }),
 });
 export type UpdateEventRequest = z.infer<typeof UpdateEventRequest>;
 
@@ -84,7 +84,7 @@ export const ListEventsByTagsQuery = z.object({
   tagIds: z
     .array(Id)
     .nonempty()
-    .openapi({ example: ["evt_tag_001", "evt_tag_002"] }),
+    .openapi({ example: ['evt_tag_001', 'evt_tag_002'] }),
   page: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
   perPage: z.coerce
     .number()
@@ -103,12 +103,12 @@ export const ListEventsByTagsQuery = z.object({
  */
 export const Event = z.object({
   id: Id,
-  name: z.string().openapi({ example: "社内LT大会" }),
+  name: z.string().openapi({ example: '社内LT大会' }),
   description: z
     .string()
     .nullable()
-    .openapi({ example: "ライトニングトークを実施します" }),
-  eventTagIds: z.array(Id).openapi({ example: ["evt_tag_001", "evt_tag_002"] }),
+    .openapi({ example: 'ライトニングトークを実施します' }),
+  eventTagIds: z.array(Id).openapi({ example: ['evt_tag_001', 'evt_tag_002'] }),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
