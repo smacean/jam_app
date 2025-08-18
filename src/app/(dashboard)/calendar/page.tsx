@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import FullCalendar, { EventClickArg, EventInput } from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import listPlugin from "@fullcalendar/list";
-import allLocales from "@fullcalendar/core/locales-all";
+import { useState, useEffect } from 'react';
+import FullCalendar, { EventClickArg, EventInput } from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import listPlugin from '@fullcalendar/list';
+import allLocales from '@fullcalendar/core/locales-all';
 
 interface ScheduleEvent {
   id: string;
@@ -19,16 +19,16 @@ export default function CalendarPage() {
   const [events, setEvents] = useState<EventInput[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState({
-    title: "",
-    date: "",
-    startTime: "",
-    endTime: "",
+    title: '',
+    date: '',
+    startTime: '',
+    endTime: '',
   });
 
   // API からスケジュール取得
   const fetchSchedules = async () => {
     try {
-      const res = await fetch("/api/schedules");
+      const res = await fetch('/api/schedules');
       const data = await res.json();
       const mappedEvents: EventInput[] = (data.items ?? []).map(
         (s: ScheduleEvent) => ({
@@ -36,11 +36,11 @@ export default function CalendarPage() {
           title: s.name,
           start: s.start_at,
           end: s.end_at,
-        })
+        }),
       );
       setEvents(mappedEvents);
     } catch (err) {
-      console.error("fetchSchedules error:", err);
+      console.error('fetchSchedules error:', err);
     }
   };
 
@@ -57,7 +57,7 @@ export default function CalendarPage() {
     e.preventDefault();
     const { title, date, startTime, endTime } = form;
     if (!title || !date || !startTime || !endTime) {
-      alert("すべての項目を入力してください");
+      alert('すべての項目を入力してください');
       return;
     }
 
@@ -68,14 +68,14 @@ export default function CalendarPage() {
     };
 
     try {
-      const res = await fetch("/api/schedules", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/schedules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
       if (!res.ok) {
-        alert("スケジュール作成に失敗しました");
+        alert('スケジュール作成に失敗しました');
         return;
       }
 
@@ -89,10 +89,10 @@ export default function CalendarPage() {
           end: newEvent.end_at,
         },
       ]);
-      setForm({ title: "", date: "", startTime: "", endTime: "" });
+      setForm({ title: '', date: '', startTime: '', endTime: '' });
       setIsModalOpen(false);
     } catch (err) {
-      console.error("handleAddEvent error:", err);
+      console.error('handleAddEvent error:', err);
     }
   };
 
@@ -101,17 +101,17 @@ export default function CalendarPage() {
 
     try {
       const res = await fetch(`/api/schedules?id=${clickInfo.event.id}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
 
       if (!res.ok) {
-        alert("削除に失敗しました");
+        alert('削除に失敗しました');
         return;
       }
 
       clickInfo.event.remove();
     } catch (err) {
-      console.error("handleEventClick error:", err);
+      console.error('handleEventClick error:', err);
     }
   };
 
@@ -130,9 +130,9 @@ export default function CalendarPage() {
         height="auto"
         locales={allLocales}
         locale="ja"
-        headerToolbar={{ left: "prev", center: "title", right: "next" }}
+        headerToolbar={{ left: 'prev', center: 'title', right: 'next' }}
         dayCellContent={(arg) => ({
-          html: `${arg.dayNumberText.split("日")[0]}`,
+          html: `${arg.dayNumberText.split('日')[0]}`,
         })}
         eventContent={(arg) => ({
           html: `<div style="font-size:10px">${arg.event.title}</div>`,
