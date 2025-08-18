@@ -5,7 +5,7 @@ import { z } from "zod";
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { LinkInput } from "@schemas/_shared/link";
 import { ReminderInput } from "./_shared/reminder";
-import { IdArray } from "./_shared/ids";
+import { Id, IdArray } from "./_shared/ids";
 
 // ZodにOpenAPI用メタデータ機能を拡張
 extendZodWithOpenApi(z);
@@ -30,7 +30,7 @@ export const CreateScheduleInput = z.object({
 // PUT /api/schedules の入力ボディ
 export const UpdateScheduleInput = z.object({
   // 必須
-  id: z.string().openapi({ example: "abc" }),
+  id: Id,
 
   // optional
   name: z.string().min(1).optional().openapi({ example: "朝会" }),
@@ -46,7 +46,7 @@ export const UpdateScheduleInput = z.object({
 
 // レスポンス1件（DBのDateはISO文字列に変換して返す）
 export const Schedule = z.object({
-  id: z.string().openapi({ example: "sch_abc" }),
+  id: Id,
   name: z.string().openapi({ example: "朝会" }),
   startAt: z.string().datetime().nullable(),
   endAt: z.string().datetime().nullable(),
@@ -76,3 +76,10 @@ export const ListSchedulesResponse = z.object({
 
 export type CreateScheduleInput = z.infer<typeof CreateScheduleInput>;
 export type Schedule = z.infer<typeof Schedule>;
+
+
+// DELETE スケジュールの削除
+export const DeleteScheduleInput = z.object({
+  id: Id,
+});
+export type DeleteScheduleInput = z.infer<typeof DeleteScheduleInput>;
