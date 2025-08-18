@@ -22,7 +22,8 @@
       "@/*": ["./*"],
       "@components/*": ["./src/components/*"],
       "@src/*": ["./src/*"],
-      "@features/*": ["./src/features/*"]
+      "@features/*": ["./src/features/*"],
+      "@schemas/*": ["./src/schemas/*"]
     }
   },
   "include": [

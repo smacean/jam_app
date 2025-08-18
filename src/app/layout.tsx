@@ -1,4 +1,3 @@
-
 // src/app/layout.tsx
 import "./globals.css";
 import Navbar from "../components/layouts/header/header";
@@ -17,11 +16,8 @@ export default function RootLayout({
     <html lang="ja">
       <body>
         <Navbar />
-        <main className="mx-auto max-w-[960px] p-6 space-y-24">
-          {children}
-        </main>
+        <main className="mx-auto max-w-[960px] p-6 space-y-24">{children}</main>
       </body>
     </html>
   );
 }
-

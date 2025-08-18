@@ -11,7 +11,10 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     // 開発時はクエリ/警告/エラーをログ出力。本番はエラーのみ。
-    log: process.env.NODE_ENV === "development" ? ["query", "warn", "error"] : ["error"],
+    log:
+      process.env.NODE_ENV === "development"
+        ? ["query", "warn", "error"]
+        : ["error"],
   });
 
 // 本番以外（=dev）ではグローバルに保持して再生成を防ぐ

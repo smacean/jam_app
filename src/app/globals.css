@@ -47,7 +47,7 @@ body {
 
 /* 日付を小さくする */
 .fc-daygrid-day-number {
-  font-size: 10px; 
+  font-size: 10px;
   position: abosolute;
   top: 0;
   left: 0;
@@ -64,5 +64,3 @@ body {
   background-color: #f8f0f0;
   color: #ff3c00;
 }
-
-

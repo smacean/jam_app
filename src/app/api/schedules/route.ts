@@ -1,66 +1,112 @@
 // src/app/api/schedules/route.ts
-// 目的: HTTPエンドポイント。Zodで入力検証→サービス層でPrisma→Zodで出力保証。
-// PrismaはEdge Runtime非対応のためNode.jsランタイムを明示。
-export const runtime = "nodejs";
-
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@src/lib/db';
 import {
-  ApiErrorSchema,
   CreateScheduleInput,
-  ListSchedulesQuery,
-  ListSchedulesResponse,
-  Schedule,
-} from "@src/schemas/schedule";
-import { createSchedule, listSchedules } from "@src/services/scheduleService";
-// --- 追加: 失敗原因をログするため（返却ボディはOpenAPIに合わせて簡素に保つ）
-import { ZodError } from "zod";
+  DeleteScheduleInput,
+  AllListSchedulesInput,
+} from '@src/schemas/schedule';
 
-// 一覧取得: GET /api/schedules?page=1&perPage=50
+export const runtime = 'nodejs'; // Prisma を使うため
+
+// GET /api/schedules?page=1&perPage=50 （まずは全部返す簡易版）
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    // クエリをZodでパース（型変換も含む）
-    // ★ 追加ポイント: URLSearchParams.get() は null を返すため、default() を効かせるには undefined に揃える
-    const q = ListSchedulesQuery.parse({
-      page: searchParams.get("page") ?? undefined,
-      perPage: searchParams.get("perPage") ?? undefined,
+    // ページング使うならここでパース
+    // const { searchParams } = new URL(req.url);
+    // const query = AllListSchedulesInput.parse({});
+    // const page = Number(searchParams.get('page') ?? '1');
+    // const perPage = Number(searchParams.get('perPage') ?? '50');
+
+    const rows = await prisma.schedule.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        // 必要に応じて関連も
+        // reminder: true, link: true, ...
+      },
     });
 
-    // DB取得
-    const result = await listSchedules(q.page, q.perPage);
-
-    // 念のため出力もZodで形保証（契約違反を早期検知）
-    return NextResponse.json(ListSchedulesResponse.parse(result), { status: 200 });
-  } catch (e) {
-    // --- 追加: 何で落ちたかをサーバログに出す（返却JSONはOpenAPIに合わせて最小）
-    if (e instanceof ZodError) {
-      console.error("GET /api/schedules ZodError:", e.flatten());
-    } else {
-      console.error("GET /api/schedules Error:", e);
-    }
-    return NextResponse.json(ApiErrorSchema.parse({ error: "Invalid query" }), { status: 400 });
+    // PrismaはcamelCase（startAt等）なので、そのまま返す
+    return NextResponse.json({
+      items: rows.map((r) => ({
+        id: r.id,
+        name: r.name,
+        startAt: r.startAt?.toISOString() ?? null,
+        endAt: r.endAt?.toISOString() ?? null,
+        gatherAt: r.gatherAt?.toISOString() ?? null,
+        gatherPlace: r.gatherPlace ?? null,
+        eventId: r.eventId ?? null,
+        createdAt: r.createdAt.toISOString(),
+        updatedAt: r.updatedAt.toISOString(),
+      })),
+      // total, page, perPage を返すなら count も回す
+    });
+  } catch (e: any) {
+    console.error('GET /api/schedules error:', e);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
   }
 }
 
-// 作成: POST /api/schedules  (JSON body)
+// POST /api/schedules
 export async function POST(req: NextRequest) {
   try {
-    // 入力ボディ検証（ここでdatetimeのフォーマット等もチェック）
-    // ★ 補足: 現行のOpenAPI(=Zod)では null は許容しないため、gatherAt/gatherPlace/eventId を送らないか、正しい型で送る
-    const body = CreateScheduleInput.parse(await req.json());
+    const body = await req.json();
+    const parsed = CreateScheduleInput.parse(body);
 
-    // DB作成
-    const created = await createSchedule(body);
+    // ★ フロントが "YYYY-MM-DDTHH:mm:ss.SSSZ" を投げてくる前提
+    // 末尾Z付きはUTCとして解釈されます（JSTずれに注意）
+    const created = await prisma.schedule.create({
+      data: {
+        name: parsed.name,
+        startAt: new Date(parsed.startAt),
+        endAt: new Date(parsed.endAt),
+        gatherAt: parsed.gatherAt ? new Date(parsed.gatherAt) : null,
+        gatherPlace: parsed.gatherPlace ?? null,
+        eventId: parsed.eventId ?? null,
+      },
+    });
 
-    // 出力もZodで最終保証
-    return NextResponse.json(Schedule.parse(created), { status: 201 });
-  } catch (e) {
-    // --- 追加: 何で落ちたかをサーバログに出す（返却JSONはOpenAPIに合わせて最小）
-    if (e instanceof ZodError) {
-      console.error("POST /api/schedules ZodError:", e.flatten());
-    } else {
-      console.error("POST /api/schedules Error:", e);
-    }
-    return NextResponse.json(ApiErrorSchema.parse({ error: "Invalid body" }), { status: 400 });
+    return NextResponse.json({
+      id: created.id,
+      name: created.name,
+      startAt: created.startAt?.toISOString() ?? null,
+      endAt: created.endAt?.toISOString() ?? null,
+      gatherAt: created.gatherAt?.toISOString() ?? null,
+      gatherPlace: created.gatherPlace ?? null,
+      eventId: created.eventId ?? null,
+      createdAt: created.createdAt.toISOString(),
+      updatedAt: created.updatedAt.toISOString(),
+    });
+  } catch (e: any) {
+    console.error('POST /api/schedules error:', e);
+    return NextResponse.json(
+      { error: e?.message ?? 'Bad Request' },
+      { status: 400 },
+    );
+  }
+}
+
+// DELETE /api/schedules?id=xxx
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+    if (!id)
+      return NextResponse.json({ error: 'id is required' }, { status: 400 });
+
+    DeleteScheduleInput.parse({ id });
+
+    await prisma.schedule.delete({ where: { id } });
+    return NextResponse.json({ success: true });
+  } catch (e: any) {
+    console.error('DELETE /api/schedules error:', e);
+    const notFound = e?.code === 'P2025'; // Prisma の Record not found
+    return NextResponse.json(
+      { error: notFound ? 'schedule not found' : 'Internal Server Error' },
+      { status: notFound ? 404 : 500 },
+    );
   }
 }
