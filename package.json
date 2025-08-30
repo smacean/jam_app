@@ -9,7 +9,7 @@
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,ts,tsx,json,md,css,scss,yml,yaml}\"",
     "check": "npm run lint && npm run format",
-    "gen:openapi": "openapi-typescript http://localhost:3000/api/openapi -o src/types/openapi.d.ts"
+    "gen:openapi": "openapi-typescript http://localhost:3000/api/openapi -o src/generated/openapi/openapi.d.ts"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",

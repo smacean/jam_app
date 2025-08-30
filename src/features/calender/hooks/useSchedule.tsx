@@ -1,14 +1,14 @@
 // src/features/calender/hooks/useSchedule.tsx
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { paths, components } from "@src/types/openapi";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { paths, components } from '@src/generated/openapi/openapi';
 
 // 型エイリアスを定義して使いやすくする
 type ListSchedulesResponse =
-  paths["/api/schedules"]["get"]["responses"]["200"]["content"]["application/json"];
-type CreateScheduleInput = components["schemas"]["CreateScheduleInput"];
+  paths['/api/schedules']['get']['responses']['200']['content']['application/json'];
+type CreateScheduleInput = components['schemas']['CreateScheduleInput'];
 
 // APIキーを定義（キャッシュ管理に利用）
-const schedulesQueryKey = ["schedules"];
+const schedulesQueryKey = ['schedules'];
 
 // =======================
 // API呼び出し関数
@@ -16,9 +16,9 @@ const schedulesQueryKey = ["schedules"];
 
 /** スケジュール一覧を取得する */
 const fetchSchedules = async (): Promise<ListSchedulesResponse> => {
-  const response = await fetch("/api/schedules");
+  const response = await fetch('/api/schedules');
   if (!response.ok) {
-    throw new Error("Failed to fetch schedules");
+    throw new Error('Failed to fetch schedules');
   }
   return response.json();
 };
@@ -26,16 +26,16 @@ const fetchSchedules = async (): Promise<ListSchedulesResponse> => {
 /** スケジュールを新規作成する */
 const createSchedule = async (
   input: CreateScheduleInput,
-): Promise<components["schemas"]["Schedule"]> => {
-  const response = await fetch("/api/schedules", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+): Promise<components['schemas']['Schedule']> => {
+  const response = await fetch('/api/schedules', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
   if (!response.ok) {
     // エラーレスポンスをパースして詳細なエラーメッセージを取得
     const errorData = await response.json();
-    throw new Error(errorData.error || "Failed to create schedule");
+    throw new Error(errorData.error || 'Failed to create schedule');
   }
   return response.json();
 };
@@ -43,11 +43,11 @@ const createSchedule = async (
 /** スケジュールを削除する */
 const deleteSchedule = async (id: string): Promise<{ success: boolean }> => {
   const response = await fetch(`/api/schedules?id=${id}`, {
-    method: "DELETE",
+    method: 'DELETE',
   });
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.error || "Failed to delete schedule");
+    throw new Error(errorData.error || 'Failed to delete schedule');
   }
   return response.json();
 };

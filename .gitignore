@@ -44,4 +44,4 @@ next-env.d.ts
 *.db
 
 # auto-generated
-/src/types/openapi.d.ts
+/src/generated/openapi/openapi.d.ts
