@@ -9,24 +9,27 @@ import {
 
 export const runtime = 'nodejs'; // Prisma を使うため
 
-// GET /api/schedules?page=1&perPage=50 （まずは全部返す簡易版）
+// GET /api/schedules?page=1&perPage=50
 export async function GET(req: NextRequest) {
   try {
-    // ページング使うならここでパース
-    // const { searchParams } = new URL(req.url);
-    // const query = AllListSchedulesInput.parse({});
-    // const page = Number(searchParams.get('page') ?? '1');
-    // const perPage = Number(searchParams.get('perPage') ?? '50');
+    const { searchParams } = new URL(req.url);
+    const page = Number(searchParams.get("page") ?? "1");
+    const perPage = Number(searchParams.get("perPage") ?? "50");
+    const skip = (page - 1) * perPage;
 
-    const rows = await prisma.schedule.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        // 必要に応じて関連も
-        // reminder: true, link: true, ...
-      },
-    });
+    const [rows, total] = await prisma.$transaction([
+      prisma.schedule.findMany({
+        skip,
+        take: perPage,
+        orderBy: { createdAt: "desc" },
+        include: {
+          // 必要に応じて関連も
+          // reminder: true, link: true, ...
+        },
+      }),
+      prisma.schedule.count(),
+    ]);
 
-    // PrismaはcamelCase（startAt等）なので、そのまま返す
     return NextResponse.json({
       items: rows.map((r) => ({
         id: r.id,
@@ -38,13 +41,19 @@ export async function GET(req: NextRequest) {
         eventId: r.eventId ?? null,
         createdAt: r.createdAt.toISOString(),
         updatedAt: r.updatedAt.toISOString(),
+        // スキーマにないものは含めない
+        reminders: null,
+        links: null,
+        scheduleTagIds: null,
       })),
-      // total, page, perPage を返すなら count も回す
+      total,
+      page,
+      perPage,
     });
   } catch (e: any) {
-    console.error('GET /api/schedules error:', e);
+    console.error("GET /api/schedules error:", e);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }

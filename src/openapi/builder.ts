@@ -7,19 +7,19 @@ import {
   OpenApiGeneratorV3,
 } from "@asteasolutions/zod-to-openapi";
 import {
-  ApiErrorSchema,
+  AllListSchedulesInput,
   CreateScheduleInput,
-  ListSchedulesQuery,
   ListSchedulesResponse,
   Schedule,
 } from "@src/schemas/schedule";
+import { ApiErrorSchema } from "@src/schemas/_shared/error";
 
 const registry = new OpenAPIRegistry();
 
 // スキーマ登録（名前をつけると他の場所から参照される）
 registry.register("Schedule", Schedule);
 registry.register("CreateScheduleInput", CreateScheduleInput);
-registry.register("ListSchedulesQuery", ListSchedulesQuery);
+registry.register("ListSchedulesQuery", AllListSchedulesInput);
 registry.register("ListSchedulesResponse", ListSchedulesResponse);
 registry.register("ApiError", ApiErrorSchema);
 
@@ -29,7 +29,7 @@ registry.registerPath({
   path: "/api/schedules",
   summary: "List schedules",
   request: {
-    query: ListSchedulesQuery, // クエリはZodのまま
+    query: AllListSchedulesInput, // クエリはZodのまま
   },
   responses: {
     200: {

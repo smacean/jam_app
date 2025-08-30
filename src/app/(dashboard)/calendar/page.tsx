@@ -1,5 +1,6 @@
 'use client';
 
+import { useSchedules } from "@src/features/calender/hooks/useSchedule";
 import { useState, useEffect } from 'react';
 import FullCalendar, { EventClickArg, EventInput } from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -115,6 +116,33 @@ export default function CalendarPage() {
     }
   };
 
+
+// データ確認用のコンポーネント
+const ScheduleDataViewer = () => {
+  const { data, isLoading, isError } = useSchedules();
+
+  return (
+    <div style={{ margin: "2rem", padding: "1rem", border: "1px solid #888" }}>
+      <h3 style={{ fontWeight: "bold" }}>useScheduleフックのデータ確認</h3>
+      {isLoading && <p>読み込み中...</p>}
+      {isError && <p style={{ color: "red" }}>エラーが発生しました</p>}
+      {data && (
+        <pre
+          style={{
+            background: "#f4f4f4",
+            padding: "1rem",
+            borderRadius: "5px",
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-all",
+          }}
+        >
+          {JSON.stringify(data.items, null, 2)}
+        </pre>
+      )}
+    </div>
+  );
+};
+
   return (
     <div className="p-6">
       <button
@@ -192,6 +220,7 @@ export default function CalendarPage() {
           </div>
         </div>
       )}
+      <ScheduleDataViewer />
     </div>
   );
 }
